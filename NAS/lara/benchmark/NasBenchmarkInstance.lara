@@ -28,7 +28,7 @@ NasBenchmarkInstance.prototype = Object.create(ClavaBenchmarkInstance.prototype)
 
 /*** IMPLEMENTATIONS ***/
 
-PolybenchBenchmarkInstance.prototype._loadPrologue = function() {
+NasBenchmarkInstance.prototype._loadPrologue = function() {
 
 	// Set standard
 	this._previousStandard = Clava.getData().getStandard();
