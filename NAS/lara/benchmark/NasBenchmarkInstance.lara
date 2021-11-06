@@ -21,6 +21,9 @@ function NasBenchmarkInstance(benchmarkName, inputSize) {
 	
 	var filename = "NAS_" + benchmarkName + ".c";
 	this._file = NasBenchmarkResources.getFile(filename);
+	
+	// Add lib m
+	this.getCMaker().addLibs("m");	
 }
 // Inheritance
 NasBenchmarkInstance.prototype = Object.create(ClavaBenchmarkInstance.prototype);
