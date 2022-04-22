@@ -1,0 +1,24 @@
+{
+	"sizes": {
+		"bzip2": {
+			"SMALL": "bzip2.c",
+			"LARGE": "gcc.c"
+		},
+		
+		"gzip": {
+			"SMALL": "bzip2.c",
+			"LARGE": "gcc.c"
+		},
+		
+		"oggenc": {
+			"SMALL": "FEETHmn_Feet in leaves (ID 0137)_BSB (bigsoundbank.com_detail-0137-feet-in-leaves.html).wav"
+		},
+		
+		"gcc": {
+			"SMALL": "bzip2.c",
+			"LARGE": "gcc.c"
+		}	
+	},
+	
+	"copy": ["bzip2", "gzip"]
+}
