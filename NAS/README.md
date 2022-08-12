@@ -20,7 +20,7 @@ Start by importing the NAS benchmark set:
 laraImport("lara.benchmark.NasBenchmarkSet");
 ```
 
-Then, create a new instance, defining which programs and sizes should be used, using the instance functions `setBenchmarks()` and `setInputSizes()`, respectively. By default, all 8 programs are setup, for the size W:
+Then, create a new instance, defining which programs and sizes should be used, using the instance functions `setBenchmarks()` and `setInputSizes()`, respectively:
 
 ```JavaScript
 const nasSet = new NasBenchmarkSet();
@@ -28,7 +28,7 @@ nasSet.setBenchmarks("EP", "IS");
 nasSet.setSizes("A", "E");
 ```
 
-Not all sizes are supported for all programs, please refer to the table below.
+By default, all 8 programs are setup, for the size W. Not all sizes are supported for all programs, please refer to the table below.
 
 ```
 Benchmarks supported sizes map:
@@ -49,16 +49,34 @@ To check programmatically if a program supports a certain input size you can use
 nasSet.print();
 
 // Output:
-//BenchmarkSet: NasBenchmarkSet
-//Benchmark names: EP,IS
-//Benchmark sizes: A,E
-//EP: A E
-//IS: A
+//
+// BenchmarkSet: NasBenchmarkSet
+// Benchmark names: EP,IS
+// Benchmark sizes: A,E
+// EP: A E
+// IS: A
 ```
 
 To obtain the benchmark instances (three, in this case), you can use the instance function `getInstances()`, which returns an array of [BenchmarkInstance](https://specs-feup.github.io/clava/api/lara.benchmark.BenchmarkInstance.html) which contains functions such as `load()`, `compile()` and `execute()`.
 
-Alternatively, since `BenchmarkSet` implements a generator function, you can use if in a `for..of` loop. In this case, in each iteration a program-size pair is automatically loaded at the beginning of the iteration, and unloaded at the end of the iteration.
+Alternatively, since `BenchmarkSet` implements a generator function, you can use it in a `for..of` loop. In this case, in each iteration a program-size pair is automatically loaded at the beginning of the iteration, and unloaded at the end of the iteration:
+
+```JavaScript
+for(const nasInstance of nasSet) {
+
+  // Print name of the benchmark instance.
+  // At this point, the current AST corresponds to this instance
+  println("Name: " + nasInstance.getName());
+  
+}
+
+// Output:
+//
+// Name: NAS-EP-A
+// Name: NAS-EP-E
+// Name: NAS-IS-A
+
+```
 
 ## Example
 
@@ -75,9 +93,6 @@ nasSet.setInputSizes("A", "E");
 const outputs = {};
 
 for(const nasInstance of nasSet) {
-  // Print name of the benchmark instance.
-  // At this point, the current AST corresponds to this instance
-	println("Name: " + nasInstance.getName());
 
   // Instrument code so that it measures execution time around the kernel
   new Timer().time(nasInstance.getKernel(), "Execution time: ");
@@ -87,19 +102,20 @@ for(const nasInstance of nasSet) {
 	
   // Store the console output for further processing 
   outputs[nasInstance.getName()] = processExecutor.getConsoleOutput();
+
 }
 
 // Partial output:
-//Name: NAS-EP-A
-//Compiling NAS-EP-A...
-//Changes in file 'laraBenchmarks\NAS-EP-A\NAS_EP.c'
-//Executing NAS-EP-A...
+//
+// Compiling NAS-EP-A...
+// Changes in file 'laraBenchmarks\NAS-EP-A\NAS_EP.c'
+// Executing NAS-EP-A...
 //
 //
-// NAS Parallel Benchmarks (NPB3.3-SER-C) - EP Benchmark
+//  NAS Parallel Benchmarks (NPB3.3-SER-C) - EP Benchmark
 //
-// Number of random numbers generated:       536870912
-//Execution time: 28556.350200ms
+//  Number of random numbers generated:       536870912
+// Execution time: 28556.350200ms
 //...
 
 
