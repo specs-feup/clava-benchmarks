@@ -25,7 +25,7 @@ Then, create a new instance, defining which programs and sizes should be used, u
 ```JavaScript
 const nasSet = new NasBenchmarkSet();
 nasSet.setBenchmarks("EP", "IS");
-nasSet.setSizes("A", "E");
+nasSet.setInputSizes("A", "E");
 ```
 
 By default, all 8 programs are setup, for the size W. Not all sizes are supported for all programs, please refer to the table below.
