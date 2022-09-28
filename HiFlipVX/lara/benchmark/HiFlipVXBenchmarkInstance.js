@@ -1,10 +1,10 @@
-laraImport(lara.benchmark.ClavaBenchmarkInstance);
-laraImport(lara.benchmark.HiFlipVXBenchmarkResources);
+laraImport("lara.benchmark.ClavaBenchmarkInstance");
+laraImport("lara.benchmark.HiFlipVXBenchmarkResources");
 
-laraImport(clava.Clava);
-laraImport(clava.ClavaJoinPoints);
+laraImport("clava.Clava");
+laraImport("clava.ClavaJoinPoints");
 
-laraImport(weaver.WeaverJps);
+laraImport("weaver.WeaverJps");
 
 /**
  * Instance of a C++ HiFlipVX benchmark.

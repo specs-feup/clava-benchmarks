@@ -1,9 +1,9 @@
-laraImport(lara.benchmark.HiFlipVXBenchmarkInstance);
+laraImport("lara.benchmark.HiFlipVXBenchmarkInstance");
 
-laraImport(lara.benchmark.BenchmarkSet);
+laraImport("lara.benchmark.BenchmarkSet");
 
-laraImport(lara.util.PredefinedStrings);
-laraImport(lara.util.StringSet);
+laraImport("lara.util.PredefinedStrings");
+laraImport("lara.util.StringSet");
 
 /**
  * C++ version of the HiFlipVX benchmarks.
