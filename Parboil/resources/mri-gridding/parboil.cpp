@@ -155,7 +155,7 @@ consume_argument(struct argparse *ap)
 struct pb_Parameters *
 pb_ReadParameters(int *_argc, char **argv)
 {
-  char *err_message;
+  char err_message[256];
   struct argparse ap;
   struct pb_Parameters *ret =
       (struct pb_Parameters *)malloc(sizeof(struct pb_Parameters));
@@ -181,7 +181,7 @@ pb_ReadParameters(int *_argc, char **argv)
       case 'o': /* Output file name */
         if (is_end_of_arguments(&ap))
         {
-          err_message = "Expecting file name after '-o'\n";
+          strcpy(err_message, "Expecting file name after '-o'\n");
           goto error;
         }
         free(ret->outFile);
@@ -190,7 +190,7 @@ pb_ReadParameters(int *_argc, char **argv)
       case 'i': /* Input file name */
         if (is_end_of_arguments(&ap))
         {
-          err_message = "Expecting file name after '-i'\n";
+          strcpy(err_message, "Expecting file name after '-i'\n");
           goto error;
         }
         ret->inpFiles = read_string_array(consume_argument(&ap));
@@ -198,7 +198,7 @@ pb_ReadParameters(int *_argc, char **argv)
       case '-': /* End of options */
         goto end_of_options;
       default:
-        err_message = "Unexpected command-line parameter\n";
+        strcpy(err_message, "Unexpected command-line parameter\n");
         goto error;
       }
     }
@@ -425,7 +425,7 @@ void pb_AddSubTimer(struct pb_TimerSet *timers, char *label, enum pb_TimerID pb_
   int len = strlen(label);
 
   subtimer->label = (char *)malloc(sizeof(char) * (len + 1));
-  sprintf(subtimer->label, "%s\0", label);
+  sprintf(subtimer->label, "%s", label);
 
   pb_ResetTimer(&subtimer->timer);
   subtimer->next = NULL;

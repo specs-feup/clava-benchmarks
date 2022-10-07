@@ -6,11 +6,8 @@
  *cr
  ***************************************************************************/
 
-#ifndef OUTPUT_H
-#define OUTPUT_H
+#pragma once
 
 #include "cutoff.h"
 
 void write_lattice_summary(const char *filename, Lattice *lattice);
-
-#endif

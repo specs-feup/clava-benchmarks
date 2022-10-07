@@ -6,12 +6,7 @@
  *cr
  ***************************************************************************/
 
-#ifndef CUTOFF_H
-#define CUTOFF_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#pragma once
 
 #include "atom.h"
 
@@ -57,9 +52,3 @@ extern "C" {
       float exclcutoff,                  /* exclusion cutoff distance */
       Atoms *atom                        /* array of atoms */
     );
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* CUTOFF_H */

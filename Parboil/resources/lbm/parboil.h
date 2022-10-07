@@ -1,8 +1,8 @@
 /*
  * (c) 2010 The Board of Trustees of the University of Illinois.
  */
-#ifndef PARBOIL_HEADER
-#define PARBOIL_HEADER
+
+#pragma once
 
 //#include <unistd.h>
 
@@ -156,5 +156,3 @@ void pb_PrintTimerSet(struct pb_TimerSet *timers);
 void pb_DestroyTimerSet(struct pb_TimerSet *timers);
 
 void pb_SetOpenCL(void *clContextPtr, void *clCommandQueuePtr);
-
-#endif // PARBOIL_HEADER

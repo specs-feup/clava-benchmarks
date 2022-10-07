@@ -39,7 +39,7 @@
 #define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
 #define K_ELEMS_PER_GRID 2048
 
-void *memalign(int, int);
+//void *memalign(int, int);
 
 struct kValues
 {

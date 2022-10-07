@@ -13,7 +13,7 @@
 
 //#include "endian.h"
 
-void *memalign(int, int);
+//void *memalign(int, int);
 
 void inputData(char *fName, int *_numK, int *_numX,
                float **kx, float **ky, float **kz,

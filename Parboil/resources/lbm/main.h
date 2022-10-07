@@ -7,7 +7,6 @@
 /*############################################################################*/
 
 #include <stdio.h>
-#include <time.h>
 #include <chrono>
 #include "config.h"
 #include "parboil.h"
@@ -16,9 +15,9 @@
 
 typedef struct
 {
-	float timeScale;
-	clock_t tickStart, tickStop;
-	struct tms timeStart, timeStop;
+	
+std::chrono::steady_clock::time_point begin;
+std::chrono::steady_clock::time_point end;
 
 } MAIN_Time;
 
