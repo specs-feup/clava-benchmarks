@@ -95,5 +95,7 @@ HiFlipVXBenchmarkInstance.prototype._closePrivate = function() {
 	// Restore previous AST
 	Clava.popAst();
 		
+	// Delete input/output files
+	Io.deleteFiles("img1.pgm", "out1.pgm", "out2.pgm", "out3.pgm", "out4.pgm", "out5.pgm");
 }
 
