@@ -21,7 +21,7 @@ function CHStoneBenchmarkInstance(benchmarkName, inputSize) {
 	this._previousFlags = undefined;
 	
 	// Add lib m
-	this.getCMaker().addLibs("m");	
+	this.getCMaker().addLibs("m");
 }
 
 
