@@ -11,7 +11,8 @@ laraImport("weaver.WeaverJps");
  */
 function HiFlipVXBenchmarkInstance(benchmarkName, inputSize) {
     // Parent constructor
-    ClavaBenchmarkInstance.call(this, "HiFlipVX-" + benchmarkName + "-" + inputSize);
+	var fullName = "HiFlipVX-" + benchmarkName + "-" + inputSize;
+    ClavaBenchmarkInstance.call(this, fullName);
 	
 	this._benchmarkName = benchmarkName;
 	this._inputSize = inputSize;
@@ -20,10 +21,19 @@ function HiFlipVXBenchmarkInstance(benchmarkName, inputSize) {
 	this._previousFlags = undefined;
 	
 	var filename = benchmarkName + "/img_main.cpp";
+	var inputname = benchmarkName + "/img1.pgm";
+
 	this._file = HiFlipVXBenchmarkResources.getFile(filename);
 
-	// Add lib m
-	//this.getCMaker().addLibs("m");	
+	let dataFile = HiFlipVXBenchmarkResources.getFile(inputname);
+	// HiFlipVX requries img1.pgm to be in the same dir as the executable
+	//let fullPath = Io.getWorkingFolder() + "/laraBenchmarks/" + fullName + "/build/bin";
+	let fullPath = Io.getWorkingFolder();
+	const copiedFilePath = Io.getPath(fullPath, dataFile.getName());
+	Io.copyFile(dataFile, copiedFilePath);
+	dataFile = copiedFilePath;
+	
+	this.dataFile = dataFile;
 }
 
 
@@ -64,7 +74,14 @@ HiFlipVXBenchmarkInstance.prototype._loadPrivate = function() {
 
 }
 
+HiFlipVXBenchmarkInstance.prototype._executePrivate = function() {		
+	if(this._currentExe === undefined) {
+		throw "HiFlipVXBenchmarkInstance._executePrivate(): no executable currently defined";
+	}
 
+	this._currentExecutor.execute(this._currentExe.getAbsolutePath(), this.dataFile.getAbsolutePath());
+	return this._currentExecutor;
+}
 
 HiFlipVXBenchmarkInstance.prototype._closePrivate = function() {
 	// Restore standard
