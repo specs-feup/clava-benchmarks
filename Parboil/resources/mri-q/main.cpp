@@ -39,7 +39,9 @@
 #define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
 #define K_ELEMS_PER_GRID 2048
 
-//void *memalign(int, int);
+#if defined(WIN32) && !defined(UNIX)
+#define aligned_alloc calloc
+#endif
 
 struct kValues
 {
@@ -94,10 +96,10 @@ ComputeQCPU(int numK, int numX,
 void createDataStructsCPU(int numK, int numX, float **phiMag,
                           float **Qr, float **Qi)
 {
-  *phiMag = (float *)memalign(16, numK * sizeof(float));
-  *Qr = (float *)memalign(16, numX * sizeof(float));
+  *phiMag = (float *)calloc(16, numK * sizeof(float));
+  *Qr = (float *)calloc(16, numX * sizeof(float));
   memset((void *)*Qr, 0, numX * sizeof(float));
-  *Qi = (float *)memalign(16, numX * sizeof(float));
+  *Qi = (float *)calloc(16, numX * sizeof(float));
   memset((void *)*Qi, 0, numX * sizeof(float));
 }
 
@@ -155,10 +157,9 @@ int main(int argc, char *argv[])
          numX, original_numK, numK);
 
   pb_SwitchToTimer(&timers, pb_TimerID_COMPUTE);
-
   /* Create CPU data structures */
   createDataStructsCPU(numK, numX, &phiMag, &Qr, &Qi);
-
+  
   ComputePhiMagCPU(numK, phiR, phiI, phiMag);
 
   kVals = (struct kValues *)calloc(numK, sizeof(struct kValues));
@@ -171,7 +172,7 @@ int main(int argc, char *argv[])
     kVals[k].PhiMag = phiMag[k];
   }
   ComputeQCPU(numK, numX, kVals, x, y, z, Qr, Qi);
-
+  printf("Here2\n");
   if (params->outFile)
   {
     /* Write Q to file */

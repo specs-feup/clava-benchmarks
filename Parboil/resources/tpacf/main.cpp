@@ -13,8 +13,6 @@
 #include "args.h"
 #include "model.h"
 
-void bzero(void *s, size_t n);
-
 int main(int argc, char **argv)
 {
   struct pb_TimerSet timers;
@@ -58,7 +56,7 @@ int main(int argc, char **argv)
     fprintf(stderr, "Unable to allocate memory\n");
     exit(-1);
   }
-  bzero(DD, memsize);
+  memset(DD, 0, memsize);
 
   // memory for RR
   RRS = (long long *)malloc(memsize);
@@ -67,7 +65,7 @@ int main(int argc, char **argv)
     fprintf(stderr, "Unable to allocate memory\n");
     exit(-1);
   }
-  bzero(RRS, memsize);
+  memset(RRS, 0, memsize);
 
   // memory for DR
   DRS = (long long *)malloc(memsize);
@@ -76,7 +74,7 @@ int main(int argc, char **argv)
     fprintf(stderr, "Unable to allocate memory\n");
     exit(-1);
   }
-  bzero(DRS, memsize);
+  memset(DRS, 0, memsize);
 
   // memory for input data
   data = (struct cartesian *)malloc(args.npoints * sizeof(struct cartesian));

@@ -1,7 +1,6 @@
 /* $Id: lbm_1d_array.h,v 1.1 2008/03/04 17:30:03 stratton Exp $ */
 
-#ifndef _LBM_MACROS_H_
-#define _LBM_MACROS_H_
+#pragma once
 
 typedef enum {C = 0,
     N, S, E, W, T, B,
@@ -161,6 +160,3 @@ typedef LBM_Grid* LBM_GridPtr;
 #define CLEAR_FLAG(g,x,y,z,f)    {FLAG_VAR(GRID_ENTRY(g, x, y, z, FLAGS)); (*_aux_) &= ~(f);}
 #define CLEAR_ALL_FLAGS(g,x,y,z) {FLAG_VAR(GRID_ENTRY(g, x, y, z, FLAGS)); (*_aux_)  =    0;}
 
-/*############################################################################*/
-
-#endif /* _LBM_MACROS_H_ */

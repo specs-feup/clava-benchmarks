@@ -28,7 +28,7 @@
 
 ## mri-q
 
-* mriq -i data/default_64_64_64_dataset.bin
+* mriq -i data/large_64_64_64_dataset.bin
 * mriq -i data/small_32_32_32_dataset.bin
 
 ## sad

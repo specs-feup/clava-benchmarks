@@ -2,12 +2,19 @@
 
 /*############################################################################*/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-
 #include "main.h"
 #include "lbm.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+#if defined(SPEC_CPU)
+#include <time.h>
+#else
+#include <sys/times.h>
+#include <unistd.h>
+#endif
+
+#include <sys/stat.h>
 
 /*############################################################################*/
 
@@ -56,9 +63,7 @@ int main(int nArgs, char *arg[])
 #if !defined(SPEC_CPU)
 	MAIN_stopClock(&time, &param);
 #endif
-
-	//MAIN_finalize(&param);
-
+	MAIN_finalize(&param);
 	pb_SwitchToTimer(&timers, pb_TimerID_NONE);
 	pb_PrintTimerSet(&timers);
 	pb_FreeParameters(params);
@@ -69,7 +74,7 @@ int main(int nArgs, char *arg[])
 
 void MAIN_parseCommandLine(int nArgs, char *arg[], MAIN_Param *param, struct pb_Parameters *params)
 {
-	//struct stat fileStat;
+	struct stat fileStat;
 
 	if (nArgs < 2)
 	{
@@ -81,7 +86,7 @@ void MAIN_parseCommandLine(int nArgs, char *arg[], MAIN_Param *param, struct pb_
 
 	if (params->inpFiles[0] != NULL)
 	{
-/* 		param->obstacleFilename = params->inpFiles[0];
+		param->obstacleFilename = params->inpFiles[0];
 
 		if (stat(param->obstacleFilename, &fileStat) != 0)
 		{
@@ -97,7 +102,7 @@ void MAIN_parseCommandLine(int nArgs, char *arg[], MAIN_Param *param, struct pb_
 				   param->obstacleFilename, (int)fileStat.st_size,
 				   SIZE_X * SIZE_Y * SIZE_Z + (SIZE_Y + 1) * SIZE_Z);
 			exit(1);
-		} */
+		}
 	}
 	else
 		param->obstacleFilename = NULL;
@@ -161,12 +166,10 @@ void MAIN_initialize(const MAIN_Param *param)
 void MAIN_finalize(const MAIN_Param *param)
 {
 	LBM_showGridStatistics(*srcGrid);
-
 	if (param->action == COMPARE)
 		LBM_compareVelocityField(*srcGrid, param->resultFilename, TRUE);
 	if (param->action == STORE)
 		LBM_storeVelocityField(*srcGrid, param->resultFilename, TRUE);
-
 	LBM_freeGrid((float **)&srcGrid);
 	LBM_freeGrid((float **)&dstGrid);
 }
@@ -176,16 +179,17 @@ void MAIN_finalize(const MAIN_Param *param)
 
 void MAIN_startClock(MAIN_Time *time)
 {
-	time->begin = std::chrono::steady_clock::now();
+	time->timeScale = 1.0 / sysconf(_SC_CLK_TCK);
+	time->tickStart = times(&(time->timeStart));
 }
 
 /*############################################################################*/
 
 void MAIN_stopClock(MAIN_Time *time, const MAIN_Param *param)
 {
-	time->end = std::chrono::steady_clock::now();
+	time->tickStop = times(&(time->timeStop));
 
-/* 	printf("MAIN_stopClock:\n"
+	printf("MAIN_stopClock:\n"
 		   "\tusr: %7.2f sys: %7.2f tot: %7.2f wct: %7.2f MLUPS: %5.2f\n\n",
 		   (time->timeStop.tms_utime - time->timeStart.tms_utime) * time->timeScale,
 		   (time->timeStop.tms_stime - time->timeStart.tms_stime) * time->timeScale,
@@ -194,7 +198,6 @@ void MAIN_stopClock(MAIN_Time *time, const MAIN_Param *param)
 			   time->timeScale,
 		   (time->tickStop - time->tickStart) * time->timeScale,
 		   1.0e-6 * SIZE_X * SIZE_Y * SIZE_Z * param->nTimeSteps /
-			   (time->tickStop - time->tickStart) / time->timeScale); */
-	printf("Elapsed time: %lu milliseconds\n", std::chrono::duration_cast<std::chrono::milliseconds>(time->end - time->begin).count());
+			   (time->tickStop - time->tickStart) / time->timeScale);
 }
 #endif

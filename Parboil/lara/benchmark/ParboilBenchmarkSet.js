@@ -13,7 +13,7 @@ function ParboilBenchmarkSet() {
 	BenchmarkSet.call(this, "ParboilBenchmarkSet");
 
 	this._testBenchmarks = ["bfs", "cutcp", "histo", "lbm", "mri-gridding", "mri-q", "sad", "sgemm", "spmv", "stencil", "tpacf"];
-	this._testInputSizes = ["N"];
+	this._testInputSizes = ["1M", "NY", "SF", "UT", "large", "small", "short", "long", "default", "medium"];
 }
 // Inheritance
 ParboilBenchmarkSet.prototype = Object.create(BenchmarkSet.prototype);
@@ -27,7 +27,8 @@ ParboilBenchmarkSet._benchmarkNames = new PredefinedStrings("benchmark name", tr
 /*
  * Available sizes
  */
-ParboilBenchmarkSet._inputSizes = new PredefinedStrings("input size", true, ["N"]);
+ParboilBenchmarkSet._inputSizes = new PredefinedStrings("input size", true, ["1M", "NY", "SF", "UT", "large", "small", "short", "long", 
+							"default", "medium"]);
 
 
 /**
@@ -49,9 +50,41 @@ ParboilBenchmarkSet.isSizeSupported = function (benchName, inputSize) {
 	ParboilBenchmarkSet.getBenchmarkNames().test(benchName);
 	ParboilBenchmarkSet.getInputSizes().test(inputSize);
 
-	// Parboil has no sizes, so this is superfluous
+	if (benchName == "bfs") {
+		return (inputSize == "1M" || inputSize == "NY" || inputSize == "SF" || inputSize == "UT");
+	} 
+	if (benchName == "cutcp") {
+		return (inputSize == "large" || inputSize == "small");
+	} 
+	if (benchName == "histo") {
+		return (inputSize == "large" || inputSize == "default");
+	} 
+	if (benchName == "lbm") {
+		return (inputSize == "long" || inputSize == "short");
+	} 
+	if (benchName == "mri-gridding") {
+		return (inputSize == "small");
+	} 
+	if (benchName == "mri-q") {
+		return (inputSize == "large" || inputSize == "small");
+	} 
+	if (benchName == "sad") {
+		return (inputSize == "large" || inputSize == "default");
+	} 
+	if (benchName == "sgemm") {
+		return (inputSize == "medium" || inputSize == "small");
+	} 
+	if (benchName == "spmv") {
+		return (inputSize == "large" || inputSize == "small" || inputSize == "medium");
+	} 
+	if (benchName == "stencil") {
+		return (inputSize == "small" || inputSize == "default");
+	} 
+	if (benchName == "tpacf") {
+		return (inputSize == "large" || inputSize == "small" || inputSize == "medium");
+	} 
 
-	return true;
+	return false;
 }
 
 ParboilBenchmarkSet.prototype.setBenchmarks = function () {

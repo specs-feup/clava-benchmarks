@@ -22,15 +22,6 @@ function RosettaBenchmarkInstance(benchmarkName, inputSize) {
 
 	// Add lib m
 	this.getCMaker().addLibs("m");	
-/*
-	var inputname = benchmarkName + "/data";
-	let dataFile = RosettaBenchmarkResources.getFile(inputname);
-	let fullPath = Io.getWorkingFolder();
-	const copiedFilePath = Io.getPath(fullPath, dataFile.getName());
-	Io.copyFile(dataFile, copiedFilePath);
-	dataFile = copiedFilePath;
-	
-	this.dataFile = dataFile;*/
 }
 
 

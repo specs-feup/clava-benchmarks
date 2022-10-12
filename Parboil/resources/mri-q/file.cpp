@@ -11,10 +11,6 @@
 #include <stdio.h>
 #include <inttypes.h>
 
-//#include "endian.h"
-
-//void *memalign(int, int);
-
 void inputData(char *fName, int *_numK, int *_numX,
                float **kx, float **ky, float **kz,
                float **x, float **y, float **z,
@@ -32,21 +28,21 @@ void inputData(char *fName, int *_numK, int *_numX,
   *_numK = numK;
   fread(&numX, sizeof(int), 1, fid);
   *_numX = numX;
-  *kx = (float *)memalign(16, numK * sizeof(float));
+  *kx = (float *)calloc(16, numK * sizeof(float));
   fread(*kx, sizeof(float), numK, fid);
-  *ky = (float *)memalign(16, numK * sizeof(float));
+  *ky = (float *)calloc(16, numK * sizeof(float));
   fread(*ky, sizeof(float), numK, fid);
-  *kz = (float *)memalign(16, numK * sizeof(float));
+  *kz = (float *)calloc(16, numK * sizeof(float));
   fread(*kz, sizeof(float), numK, fid);
-  *x = (float *)memalign(16, numX * sizeof(float));
+  *x = (float *)calloc(16, numX * sizeof(float));
   fread(*x, sizeof(float), numX, fid);
-  *y = (float *)memalign(16, numX * sizeof(float));
+  *y = (float *)calloc(16, numX * sizeof(float));
   fread(*y, sizeof(float), numX, fid);
-  *z = (float *)memalign(16, numX * sizeof(float));
+  *z = (float *)calloc(16, numX * sizeof(float));
   fread(*z, sizeof(float), numX, fid);
-  *phiR = (float *)memalign(16, numK * sizeof(float));
+  *phiR = (float *)calloc(16, numK * sizeof(float));
   fread(*phiR, sizeof(float), numK, fid);
-  *phiI = (float *)memalign(16, numK * sizeof(float));
+  *phiI = (float *)calloc(16, numK * sizeof(float));
   fread(*phiI, sizeof(float), numK, fid);
   fclose(fid);
 }
