@@ -13,7 +13,7 @@ function RosettaBenchmarkSet() {
 	BenchmarkSet.call(this, "RosettaBenchmarkSet");
 
 	this._testBenchmarks = ["3d-rendering", "digit-recognition", "face-detection", "optical-flow", "spam-filter"];
-	this._testInputSizes = ["N"];
+	this._testInputSizes = ["N", "current", "sintel"];
 }
 // Inheritance
 RosettaBenchmarkSet.prototype = Object.create(BenchmarkSet.prototype);
@@ -27,7 +27,7 @@ RosettaBenchmarkSet._benchmarkNames = new PredefinedStrings("benchmark name", tr
 /*
  * Available sizes
  */
-RosettaBenchmarkSet._inputSizes = new PredefinedStrings("input size", true, ["N"]);
+RosettaBenchmarkSet._inputSizes = new PredefinedStrings("input size", true, ["N", "current", "sintel"]);
 
 
 /**
@@ -49,9 +49,12 @@ RosettaBenchmarkSet.isSizeSupported = function (benchName, inputSize) {
 	RosettaBenchmarkSet.getBenchmarkNames().test(benchName);
 	RosettaBenchmarkSet.getInputSizes().test(inputSize);
 
-	// Rosetta has no sizes, so this is superfluous
-
-	return true;
+	if (benchName == "optical-flow") {
+		return (inputSize == "current" || inputSize == "sintel");
+	}
+	else {
+		return (inputSize == "N")
+	}
 }
 
 RosettaBenchmarkSet.prototype.setBenchmarks = function () {

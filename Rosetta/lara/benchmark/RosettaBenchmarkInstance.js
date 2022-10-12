@@ -11,7 +11,8 @@ laraImport("weaver.WeaverJps");
  */
 function RosettaBenchmarkInstance(benchmarkName, inputSize) {
     // Parent constructor
-    ClavaBenchmarkInstance.call(this, "Rosetta-" + benchmarkName + "-" + inputSize);
+	var fullName = "Rosetta-" + benchmarkName + "-" + inputSize;
+    ClavaBenchmarkInstance.call(this, fullName);
 	
 	this._benchmarkName = benchmarkName;
 	this._inputSize = inputSize;
@@ -21,6 +22,15 @@ function RosettaBenchmarkInstance(benchmarkName, inputSize) {
 
 	// Add lib m
 	this.getCMaker().addLibs("m");	
+/*
+	var inputname = benchmarkName + "/data";
+	let dataFile = RosettaBenchmarkResources.getFile(inputname);
+	let fullPath = Io.getWorkingFolder();
+	const copiedFilePath = Io.getPath(fullPath, dataFile.getName());
+	Io.copyFile(dataFile, copiedFilePath);
+	dataFile = copiedFilePath;
+	
+	this.dataFile = dataFile;*/
 }
 
 
@@ -44,8 +54,6 @@ RosettaBenchmarkInstance.prototype._loadPrologue = function() {
 }
 
 RosettaBenchmarkInstance.prototype._loadPrivate = function() {
-
-
 	// Save current AST
 	Clava.pushAst();
 	
@@ -71,11 +79,59 @@ RosettaBenchmarkInstance.prototype._closePrivate = function() {
 
 	// Restore previous AST
 	Clava.popAst();
-		
+
+	// Delete input/output files
+	if (this._benchmarkName == "spam-filter") {
+		Io.deleteFiles("output.txt");
+		Io.deleteFolder("data");
+	}
+	else if (this._benchmarkName == "optical-flow") {
+
+	}
+	else {
+		Io.deleteFiles("outputs.txt");
+	}
+}
+
+RosettaBenchmarkInstance.prototype._copyDataFolder = function(fName) {	
+	let dataFolder = RosettaBenchmarkResources.getFolder(fName);
+	let fullPath = Io.getWorkingFolder();
+	const copiedFolderPath = Io.getPath(fullPath, dataFolder.getName());
+	Io.copyFolder(dataFolder, copiedFolderPath);
+	dataFolder = copiedFolderPath;
+}
+
+RosettaBenchmarkInstance.prototype._executePrivate = function() {		
+	if(this._currentExe === undefined) {
+		throw "RosettaBenchmarkInstance._executePrivate(): no executable currently defined";
+	}
+
+	if (this._benchmarkName == "spam-filter") {
+		var fName = this._benchmarkName + "/data";
+		this._copyDataFolder(fName);
+
+		this._currentExecutor.execute(this._currentExe.getAbsolutePath(), "-p", "data");
+	}
+	else if (this._benchmarkName == "optical-flow") {
+		if (this._inputSize == "current") {
+			var fName = this._benchmarkName + "/datasets/current";
+			this._copyDataFolder(fName);
+
+			this._currentExecutor.execute(this._currentExe.getAbsolutePath(), "-p",
+			"datasets/current", "-o", "output_current.flo");
+		}
+		if (this._inputSize == "sintel") {
+			this._currentExecutor.execute(this._currentExe.getAbsolutePath(), "-p",
+			"datasets/sintel_alley", "-o", "output_sintel.flo");
+		}
+	}
+	else {
+		this._currentExecutor.execute(this._currentExe.getAbsolutePath());
+	}
+	return this._currentExecutor;
 }
 
 RosettaBenchmarkInstance.prototype._addCode = function() {
-
 	// Create array with source files	
 	var sourceFiles = [];
 
@@ -87,6 +143,7 @@ RosettaBenchmarkInstance.prototype._addCode = function() {
 			}
 		}
 	}
+	//sourceFiles.push(this._benchmarkName + "/test.cpp");
 	println(sourceFiles);
 
 	// Add files to tree
