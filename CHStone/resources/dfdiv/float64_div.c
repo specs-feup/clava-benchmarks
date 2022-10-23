@@ -642,6 +642,7 @@ int main(int argc, char **argv)
     int i;
     float64 x1, x2;
     main_result = 0;
+	#pragma kernel
     for (i = 0; i < N; i++)
     {
         float64 result;

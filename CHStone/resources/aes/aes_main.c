@@ -873,6 +873,7 @@ int aes_main(void)
 int main()
 {
     main_result = 0;
+	#pragma kernel
     aes_main();
     //printf("\n%d\n", main_result);
     return main_result;

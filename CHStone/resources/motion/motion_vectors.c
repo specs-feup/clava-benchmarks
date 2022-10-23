@@ -418,6 +418,7 @@ int main()
 	}
 
 	Initialize_Buffer();
+	#pragma kernel
 	motion_vectors(PMV, dmvector, motion_vertical_field_select, s,
 				   motion_vector_count, mv_format, h_r_size, v_r_size, dmv,
 				   mvscale);

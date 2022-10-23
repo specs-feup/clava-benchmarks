@@ -228,6 +228,7 @@ int main()
     int i;
     int main_result;
     main_result = 0;
+	#pragma kernel
     sha_stream();
 
     for (i = 0; i < 5; i++)

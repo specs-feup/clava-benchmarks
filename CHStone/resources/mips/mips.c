@@ -298,6 +298,7 @@ int main()
   while (1)
   {
     main_result = 0;
+	#pragma kernel
     int n_inst = mips();
     int j;
 

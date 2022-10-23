@@ -1063,6 +1063,7 @@ int main()
     int main_result;
     int i;
     main_result = 0;
+	#pragma kernel
     for (i = 0; i < N; i++)
     {
         float64 result;

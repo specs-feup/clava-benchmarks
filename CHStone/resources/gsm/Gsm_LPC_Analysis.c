@@ -506,6 +506,7 @@ int main()
     for (i = 0; i < N; i++)
         so[i] = inData[i];
 
+	#pragma kernel
     Gsm_LPC_Analysis(so, LARc);
 
     for (i = 0; i < N; i++)
