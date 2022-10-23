@@ -146,7 +146,12 @@ int encrypt(int statemt[32], int key[32], int key_type)
     // }
 
     for (i = 0; i < 16; i++)
-        main_result += (statemt[i] != out_enc_statemt[i]);
+		int isDiff = (statemt[i] != out_enc_statemt[i]);
+		if(isDiff) {
+			printf("Encrypt test fail. Expected %d, got %d", out_enc_statemt[i], statemt[i]);
+		}
+		main_result += isDiff;
+        //main_result += (statemt[i] != out_enc_statemt[i]);
 
     return 0;
 }
@@ -219,8 +224,14 @@ int decrypt(int statemt[32], int key[32], int key_type)
     // printf ("%x", statemt[i]);
     // }
 
-    for (i = 0; i < 16; i++)
-        main_result += (statemt[i] != out_dec_statemt[i]);
+    for (i = 0; i < 16; i++) {
+		int isDiff = (statemt[i] != out_dec_statemt[i]);
+		if(isDiff) {
+			printf("Decrypt test fail. Expected %d, got %d", out_dec_statemt[i], statemt[i]);
+		}
+		main_result += isDiff;
+        //main_result += (statemt[i] != out_dec_statemt[i]);
+	}
 
     return 0;
 }
