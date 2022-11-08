@@ -147,6 +147,7 @@ int main(int argc, char *argv[]) {
   /*
    * CPU kernel
    */
+  #pragma kernel
   if (cpu_compute_cutoff_potential_lattice(cpu_lattice, cutoff, atom)) {
     fprintf(stderr, "Computation failed\n");
     exit(1);

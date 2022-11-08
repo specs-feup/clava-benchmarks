@@ -89,6 +89,7 @@ int main(int argc, char *argv[])
   std::vector<float> matC(matArow * matBcol);
 
   // Use standard sgemm interface
+  #pragma kernel
   basicSgemm('N', 'T', matArow, matBcol, matAcol, 1.0f,
              &matA.front(), matArow, &matBT.front(), matBcol, 0.0f, &matC.front(),
              matArow);

@@ -97,6 +97,7 @@ int main(int argc, char *argv[])
   pb_SwitchToTimer(&timers, pb_TimerID_COMPUTE);
 
   int iter;
+  #pragma kernel
   for (iter = 0; iter < numIterations; iter++)
   {
     memset(histo, 0, histo_height * histo_width * sizeof(unsigned char));

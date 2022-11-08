@@ -42,7 +42,7 @@ int main(int nArgs, char *arg[])
 #if !defined(SPEC_CPU)
 	MAIN_startClock(&time);
 #endif
-
+	#pragma kernel
 	for (t = 1; t <= param.nTimeSteps; t++)
 	{
 		if (param.simType == CHANNEL)

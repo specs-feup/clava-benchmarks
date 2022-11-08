@@ -184,6 +184,7 @@ void runCPU( int argc, char** argv)
 	//printf("start cpu version\n");
 	unsigned int cpu_timer = 0;
     pb_SwitchToTimer(&timers, pb_TimerID_COMPUTE);
+	#pragma kernel
 	BFS_CPU( h_graph_nodes, h_graph_edges, color, h_cost,  source 
 		 );
     pb_SwitchToTimer(&timers, pb_TimerID_IO);
