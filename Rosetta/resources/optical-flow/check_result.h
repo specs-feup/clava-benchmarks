@@ -6,17 +6,9 @@
 /*                                                               */
 /*===============================================================*/
 
-#ifndef __CHECK_RESULT_H__
-#define __CHECK_RESULT_H__
+#pragma once
 
-#include "typedefs.h"
-#include "imageLib.h"
 #include <string>
+#include "typedefs.h"
 
-#ifdef OCL
-void check_results(velocity_t output[MAX_HEIGHT * MAX_WIDTH], CFloatImage refFlow, std::string outFile);
-#else
-void check_results(velocity_t output[MAX_HEIGHT][MAX_WIDTH], CFloatImage refFlow, std::string outFile);
-#endif
-
-#endif
+void check_results(velocity_t output[MAX_HEIGHT][MAX_WIDTH], float refFlow[MAX_HEIGHT][MAX_WIDTH * 2], std::string outFile);

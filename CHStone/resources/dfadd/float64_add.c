@@ -25,8 +25,8 @@
  * Disclaimer of Warranty
  *
  * These software programs are available to the user without any license fee or
- * royalty on an "as is" basis. The authors disclaims any and all warranties, 
- * whether express, implied, or statuary, including any implied warranties or 
+ * royalty on an "as is" basis. The authors disclaims any and all warranties,
+ * whether express, implied, or statuary, including any implied warranties or
  * merchantability or of fitness for a particular purpose. In no event shall the
  * copyright-holder be liable for any incidental, punitive, or consequential damages
  * of any kind whatsoever arising from the use of these programs. This disclaimer
@@ -415,7 +415,7 @@ float64 addFloat64Sigs(float64 a, float64 b, flag zSign)
             return packFloat64(zSign, 0, (aSig + bSig) >> 9);
         zSig = LIT64(0x4000000000000000) + aSig + bSig;
         zExp = aExp;
-        goto roundAndPack;
+        return roundAndPackFloat64(zSign, zExp, zSig);
     }
     aSig |= LIT64(0x2000000000000000);
     zSig = (aSig + bSig) << 1;
@@ -425,7 +425,6 @@ float64 addFloat64Sigs(float64 a, float64 b, flag zSign)
         zSig = aSig + bSig;
         ++zExp;
     }
-roundAndPack:
     return roundAndPackFloat64(zSign, zExp, zSig);
 }
 
@@ -451,9 +450,58 @@ float64 subFloat64Sigs(float64 a, float64 b, flag zSign)
     aSig <<= 10;
     bSig <<= 10;
     if (0 < expDiff)
-        goto aExpBigger;
+    {
+        if (aExp == 0x7FF)
+        {
+            if (aSig)
+                return propagateFloat64NaN(a, b);
+            return a;
+        }
+        if (bExp == 0)
+            --expDiff;
+        else
+            bSig |= LIT64(0x4000000000000000);
+        shift64RightJamming(bSig, expDiff, &bSig);
+        aSig |= LIT64(0x4000000000000000);
+
+        zSig = aSig - bSig;
+        zExp = aExp;
+
+        --zExp;
+        return normalizeRoundAndPackFloat64(zSign, zExp, zSig);
+    }
     if (expDiff < 0)
-        goto bExpBigger;
+    {
+        if (bExp == 0x7FF)
+        {
+            if (bSig)
+                return propagateFloat64NaN(a, b);
+            return packFloat64(zSign ^ 1, 0x7FF, 0);
+        }
+        if (aExp == 0)
+            ++expDiff;
+        else
+            aSig |= LIT64(0x4000000000000000);
+        shift64RightJamming(aSig, -expDiff, &aSig);
+        bSig |= LIT64(0x4000000000000000);
+
+        if (aExp == 0x7FF)
+        {
+            if (aSig)
+                return propagateFloat64NaN(a, b);
+            return a;
+        }
+        if (bExp == 0)
+            --expDiff;
+        else
+            bSig |= LIT64(0x4000000000000000);
+        shift64RightJamming(bSig, expDiff, &bSig);
+        aSig |= LIT64(0x4000000000000000);
+        zSig = aSig - bSig;
+        zExp = aExp;
+        --zExp;
+        return normalizeRoundAndPackFloat64(zSign, zExp, zSig);
+    }
     if (aExp == 0x7FF)
     {
         if (aSig | bSig)
@@ -467,47 +515,21 @@ float64 subFloat64Sigs(float64 a, float64 b, flag zSign)
         bExp = 1;
     }
     if (bSig < aSig)
-        goto aBigger;
+    {
+        zSig = aSig - bSig;
+        zExp = aExp;
+        --zExp;
+        return normalizeRoundAndPackFloat64(zSign, zExp, zSig);
+    }
     if (aSig < bSig)
-        goto bBigger;
+    {
+        zSig = bSig - aSig;
+        zExp = bExp;
+        zSign ^= 1;
+        --zExp;
+        return normalizeRoundAndPackFloat64(zSign, zExp, zSig);
+    }
     return packFloat64(float_rounding_mode == float_round_down, 0, 0);
-bExpBigger:
-    if (bExp == 0x7FF)
-    {
-        if (bSig)
-            return propagateFloat64NaN(a, b);
-        return packFloat64(zSign ^ 1, 0x7FF, 0);
-    }
-    if (aExp == 0)
-        ++expDiff;
-    else
-        aSig |= LIT64(0x4000000000000000);
-    shift64RightJamming(aSig, -expDiff, &aSig);
-    bSig |= LIT64(0x4000000000000000);
-bBigger:
-    zSig = bSig - aSig;
-    zExp = bExp;
-    zSign ^= 1;
-    goto normalizeRoundAndPack;
-aExpBigger:
-    if (aExp == 0x7FF)
-    {
-        if (aSig)
-            return propagateFloat64NaN(a, b);
-        return a;
-    }
-    if (bExp == 0)
-        --expDiff;
-    else
-        bSig |= LIT64(0x4000000000000000);
-    shift64RightJamming(bSig, expDiff, &bSig);
-    aSig |= LIT64(0x4000000000000000);
-aBigger:
-    zSig = aSig - bSig;
-    zExp = aExp;
-normalizeRoundAndPack:
-    --zExp;
-    return normalizeRoundAndPackFloat64(zSign, zExp, zSig);
 }
 
 /*----------------------------------------------------------------------------
@@ -543,9 +565,9 @@ int main()
         result = float64_add(x1, x2);
         main_result += (result != z_output[i]);
 
-        //printf("a_input=%016llx b_input=%016llx expected=%016llx output=%016llx\n",
-        //       a_input[i], b_input[i], z_output[i], result);
+        // printf("a_input=%016llx b_input=%016llx expected=%016llx output=%016llx\n",
+        //        a_input[i], b_input[i], z_output[i], result);
     }
-    //printf("%d\n", main_result);
+    // printf("%d\n", main_result);
     return main_result;
 }

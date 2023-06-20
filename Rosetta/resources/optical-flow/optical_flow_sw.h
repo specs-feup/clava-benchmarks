@@ -6,9 +6,7 @@
 /*                                                               */
 /*===============================================================*/
 
-#ifndef __OPTICAL_FLOW_H__
-#define __OPTICAL_FLOW_H__
-
+#pragma once
 #include "typedefs.h"
 
 // convolution filters
@@ -23,4 +21,3 @@ void optical_flow_sw(pixel_t frame0[MAX_HEIGHT][MAX_WIDTH],
                      pixel_t frame3[MAX_HEIGHT][MAX_WIDTH],
                      pixel_t frame4[MAX_HEIGHT][MAX_WIDTH],
                      velocity_t outputs[MAX_HEIGHT][MAX_WIDTH]);
-#endif
