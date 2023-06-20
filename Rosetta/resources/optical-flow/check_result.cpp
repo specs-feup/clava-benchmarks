@@ -9,6 +9,10 @@
 // value to use to represent unknown flow
 #define UNKNOWN_FLOW 1e10
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 bool unknown_flow(float u, float v)
 {
     return (fabs(u) > UNKNOWN_FLOW_THRESH) || (fabs(v) > UNKNOWN_FLOW_THRESH) || std::isnan(u) || std::isnan(v);
