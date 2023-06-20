@@ -25,8 +25,8 @@
  * Disclaimer of Warranty
  *
  * These software programs are available to the user without any license fee or
- * royalty on an "as is" basis. The authors disclaims any and all warranties, 
- * whether express, implied, or statuary, including any implied warranties or 
+ * royalty on an "as is" basis. The authors disclaims any and all warranties,
+ * whether express, implied, or statuary, including any implied warranties or
  * merchantability or of fitness for a particular purpose. In no event shall the
  * copyright-holder be liable for any incidental, punitive, or consequential damages
  * of any kind whatsoever arising from the use of these programs. This disclaimer
@@ -158,260 +158,260 @@ static unsigned char *ReadBuf;
  */
 int read_byte(void)
 {
-  return *ReadBuf++;
+    return *ReadBuf++;
 }
 
 short read_word(void)
 {
-  short c;
+    short c;
 
-  c = *ReadBuf++ << 8;
-  c |= *ReadBuf++;
+    c = *ReadBuf++ << 8;
+    c |= *ReadBuf++;
 
-  return c;
+    return c;
 }
 
 int read_dword(void)
 {
-  int c;
+    int c;
 
-  c = *ReadBuf++ << 24;
-  c |= *ReadBuf++ << 16;
-  c |= *ReadBuf++ << 8;
-  c |= *ReadBuf++;
+    c = *ReadBuf++ << 24;
+    c |= *ReadBuf++ << 16;
+    c |= *ReadBuf++ << 8;
+    c |= *ReadBuf++;
 
-  return c;
+    return c;
 }
 
 int first_marker(void)
 {
-  int c1, c2;
-  c1 = read_byte();
-  c2 = read_byte();
+    int c1, c2;
+    c1 = read_byte();
+    c2 = read_byte();
 
-  if (c1 != 0xFF || c2 != M_SOI)
-  {
-    main_result++;
-    // printf( "Not Jpeg File!\n");
-    EXIT;
-  }
+    if (c1 != 0xFF || c2 != M_SOI)
+    {
+        main_result++;
+        // printf( "Not Jpeg File!\n");
+        EXIT;
+    }
 
-  return c2;
+    return c2;
 }
 
 int next_marker(void)
 {
-  int c;
+    int c;
 
-  for (;;)
-  {
-    c = read_byte();
-
-    while (c != 0xff)
-      c = read_byte();
-
-    do
+    for (;;)
     {
-      c = read_byte();
-    } while (c == 0xff);
-    if (c != 0)
-      break;
-  }
-  return c;
+        c = read_byte();
+
+        while (c != 0xff)
+            c = read_byte();
+
+        do
+        {
+            c = read_byte();
+        } while (c == 0xff);
+        if (c != 0)
+            break;
+    }
+    return c;
 }
 
 /*
- *  Baseline DCT ( Huffman )  
+ *  Baseline DCT ( Huffman )
  */
 void get_sof()
 {
-  int ci, c;
-  int length;
-  char *p_comp_info_index;
-  char *p_comp_info_id;
-  char *p_comp_info_h_samp_factor;
-  char *p_comp_info_v_samp_factor;
-  char *p_comp_info_quant_tbl_no;
-  char *p_comp_info_dc_tbl_no;
-  char *p_comp_info_ac_tbl_no;
+    int ci, c;
+    int length;
+    char *p_comp_info_index;
+    char *p_comp_info_id;
+    char *p_comp_info_h_samp_factor;
+    char *p_comp_info_v_samp_factor;
+    char *p_comp_info_quant_tbl_no;
+    char *p_comp_info_dc_tbl_no;
+    char *p_comp_info_ac_tbl_no;
 
-  length = read_word();
-  p_jinfo_data_precision = read_byte();
-  p_jinfo_image_height = read_word();
-  p_jinfo_image_width = read_word();
-  p_jinfo_num_components = read_byte();
+    length = read_word();
+    p_jinfo_data_precision = read_byte();
+    p_jinfo_image_height = read_word();
+    p_jinfo_image_width = read_word();
+    p_jinfo_num_components = read_byte();
 
-  // printf("length         = %d\n",length);
-  // printf("data_precision = %d\n",p_jinfo_data_precision);
-  // printf("image_height   = %d\n",p_jinfo_image_height);
-  // printf("image_width    = %d\n",p_jinfo_image_width);
-  // printf("num_components = %d\n",p_jinfo_num_components);
+    // printf("length         = %d\n",length);
+    // printf("data_precision = %d\n",p_jinfo_data_precision);
+    // printf("image_height   = %d\n",p_jinfo_image_height);
+    // printf("image_width    = %d\n",p_jinfo_image_width);
+    // printf("num_components = %d\n",p_jinfo_num_components);
 
-  if (length != out_length_get_sof)
-  {
-    main_result++;
-  }
-  if (p_jinfo_data_precision != out_data_precision_get_sof)
-  {
-    main_result++;
-  }
-  if (p_jinfo_image_height != out_p_jinfo_image_height_get_sof)
-  {
-    main_result++;
-  }
-  if (p_jinfo_image_width != out_p_jinfo_image_width_get_sof)
-  {
-    main_result++;
-  }
-  if (p_jinfo_num_components != out_p_jinfo_num_components_get_sof)
-  {
-    main_result++;
-  }
-
-  length -= 8;
-
-  /* Omit error check */
-
-  /* Check components */
-  for (ci = 0; ci < p_jinfo_num_components; ci++)
-  {
-    p_comp_info_index = &p_jinfo_comps_info_index[ci];
-    p_comp_info_id = &p_jinfo_comps_info_id[ci];
-    p_comp_info_h_samp_factor = &p_jinfo_comps_info_h_samp_factor[ci];
-    p_comp_info_v_samp_factor = &p_jinfo_comps_info_v_samp_factor[ci];
-    p_comp_info_quant_tbl_no = &p_jinfo_comps_info_quant_tbl_no[ci];
-
-    *p_comp_info_index = ci;
-    *p_comp_info_id = read_byte();
-    c = read_byte();
-    *p_comp_info_h_samp_factor = (c >> 4) & 15;
-    *p_comp_info_v_samp_factor = (c)&15;
-    *p_comp_info_quant_tbl_no = read_byte();
-
-    // printf(" index         = %d\n",*p_comp_info_index);
-    // printf(" id            = %d\n",*p_comp_info_id);
-    // printf(" h_samp_factor = %d\n",*p_comp_info_h_samp_factor);
-    // printf(" v_samp_factor = %d\n",*p_comp_info_v_samp_factor);
-    // printf(" quant_tbl_no  = %d\n\n",*p_comp_info_quant_tbl_no);
-
-    if (*p_comp_info_index != out_index_get_sof[ci])
+    if (length != out_length_get_sof)
     {
-      main_result++;
+        main_result++;
     }
-    if (*p_comp_info_id != out_id_get_sof[ci])
+    if (p_jinfo_data_precision != out_data_precision_get_sof)
     {
-      main_result++;
+        main_result++;
     }
-    if (*p_comp_info_h_samp_factor != out_h_samp_factor_get_sof[ci])
+    if (p_jinfo_image_height != out_p_jinfo_image_height_get_sof)
     {
-      main_result++;
+        main_result++;
     }
-    if (*p_comp_info_v_samp_factor != out_v_samp_factor_get_sof[ci])
+    if (p_jinfo_image_width != out_p_jinfo_image_width_get_sof)
     {
-      main_result++;
+        main_result++;
     }
-    if (*p_comp_info_quant_tbl_no != out_quant_tbl_no_get_sof[ci])
+    if (p_jinfo_num_components != out_p_jinfo_num_components_get_sof)
     {
-      main_result++;
+        main_result++;
     }
-  }
 
-  /*
+    length -= 8;
+
+    /* Omit error check */
+
+    /* Check components */
+    for (ci = 0; ci < p_jinfo_num_components; ci++)
+    {
+        p_comp_info_index = &p_jinfo_comps_info_index[ci];
+        p_comp_info_id = &p_jinfo_comps_info_id[ci];
+        p_comp_info_h_samp_factor = &p_jinfo_comps_info_h_samp_factor[ci];
+        p_comp_info_v_samp_factor = &p_jinfo_comps_info_v_samp_factor[ci];
+        p_comp_info_quant_tbl_no = &p_jinfo_comps_info_quant_tbl_no[ci];
+
+        *p_comp_info_index = ci;
+        *p_comp_info_id = read_byte();
+        c = read_byte();
+        *p_comp_info_h_samp_factor = (c >> 4) & 15;
+        *p_comp_info_v_samp_factor = (c)&15;
+        *p_comp_info_quant_tbl_no = read_byte();
+
+        // printf(" index         = %d\n",*p_comp_info_index);
+        // printf(" id            = %d\n",*p_comp_info_id);
+        // printf(" h_samp_factor = %d\n",*p_comp_info_h_samp_factor);
+        // printf(" v_samp_factor = %d\n",*p_comp_info_v_samp_factor);
+        // printf(" quant_tbl_no  = %d\n\n",*p_comp_info_quant_tbl_no);
+
+        if (*p_comp_info_index != out_index_get_sof[ci])
+        {
+            main_result++;
+        }
+        if (*p_comp_info_id != out_id_get_sof[ci])
+        {
+            main_result++;
+        }
+        if (*p_comp_info_h_samp_factor != out_h_samp_factor_get_sof[ci])
+        {
+            main_result++;
+        }
+        if (*p_comp_info_v_samp_factor != out_v_samp_factor_get_sof[ci])
+        {
+            main_result++;
+        }
+        if (*p_comp_info_quant_tbl_no != out_quant_tbl_no_get_sof[ci])
+        {
+            main_result++;
+        }
+    }
+
+    /*
      *  Determine Sampling Factor
      *  Only 1_1_1 and 4_1_1 are supported
      */
-  if (p_jinfo_comps_info_h_samp_factor[0] == 2)
-  {
-    p_jinfo_smp_fact = SF4_1_1;
-    // printf("\nSampling Factor is 4:1:1\n");
-  }
-  else
-  {
-    p_jinfo_smp_fact = SF1_1_1;
-    // printf("\nSampling Factor is 1:1:1\n");
-  }
+    if (p_jinfo_comps_info_h_samp_factor[0] == 2)
+    {
+        p_jinfo_smp_fact = SF4_1_1;
+        // printf("\nSampling Factor is 4:1:1\n");
+    }
+    else
+    {
+        p_jinfo_smp_fact = SF1_1_1;
+        // printf("\nSampling Factor is 1:1:1\n");
+    }
 }
 
 void get_sos()
 {
-  int length, num_comp;
-  int i, c, cc, ci, j;
-  char *p_comp_info_index;
-  char *p_comp_info_id;
-  char *p_comp_info_h_samp_factor;
-  char *p_comp_info_v_samp_factor;
-  char *p_comp_info_quant_tbl_no;
-  char *p_comp_info_dc_tbl_no;
-  char *p_comp_info_ac_tbl_no;
+    int length, num_comp;
+    int i, c, cc, ci, j;
+    char *p_comp_info_index;
+    char *p_comp_info_id;
+    char *p_comp_info_h_samp_factor;
+    char *p_comp_info_v_samp_factor;
+    char *p_comp_info_quant_tbl_no;
+    char *p_comp_info_dc_tbl_no;
+    char *p_comp_info_ac_tbl_no;
 
-  length = read_word();
-  num_comp = read_byte();
+    length = read_word();
+    num_comp = read_byte();
 
-  // printf(" length = %d\n",length);
-  // printf(" num_comp = %d\n",num_comp);
+    // printf(" length = %d\n",length);
+    // printf(" num_comp = %d\n",num_comp);
 
-  if (length != out_length_get_sos)
-  {
-    main_result++;
-  }
-  if (num_comp != out_num_comp_get_sos)
-  {
-    main_result++;
-  }
-
-  /* Decode each component */
-  for (i = 0; i < num_comp; i++)
-  {
-    cc = read_byte();
-    c = read_byte();
-
-    for (ci = 0; ci < p_jinfo_num_components; ci++)
+    if (length != out_length_get_sos)
     {
-      p_comp_info_id = &p_jinfo_comps_info_id[ci];
-      p_comp_info_dc_tbl_no = &p_jinfo_comps_info_dc_tbl_no[ci];
-      p_comp_info_ac_tbl_no = &p_jinfo_comps_info_ac_tbl_no[ci];
-
-      if (cc == *p_comp_info_id)
-        goto id_found;
+        main_result++;
     }
-    main_result++;
-    // printf("Bad Component ID!\n");
-    EXIT;
-
-  id_found:
-    *p_comp_info_dc_tbl_no = (c >> 4) & 15;
-    *p_comp_info_ac_tbl_no = (c)&15;
-
-    // printf(" comp_id       = %d\n",cc);
-    // printf(" dc_tbl_no     = %d\n",*p_comp_info_dc_tbl_no);
-    // printf(" ac_tbl_no     = %d\n",*p_comp_info_ac_tbl_no);
-
-    if (cc != out_comp_id_get_sos[i_get_sos])
+    if (num_comp != out_num_comp_get_sos)
     {
-      main_result++;
+        main_result++;
     }
-    if (*p_comp_info_dc_tbl_no != out_dc_tbl_no_get_sos[i_get_sos])
-    {
-      main_result++;
-    }
-    if (*p_comp_info_ac_tbl_no != out_ac_tbl_no_get_sos[i_get_sos])
-    {
-      main_result++;
-    }
-    i_get_sos++;
-  }
 
-  /* Pass parameters; Ss, Se, Ah and Al for progressive JPEG */
-  j = 3;
-  while (j--)
-  {
-    c = read_byte();
-  }
+    /* Decode each component */
+    for (i = 0; i < num_comp; i++)
+    {
+        cc = read_byte();
+        c = read_byte();
 
-  /*
+        for (ci = 0; ci < p_jinfo_num_components; ci++)
+        {
+            p_comp_info_id = &p_jinfo_comps_info_id[ci];
+            p_comp_info_dc_tbl_no = &p_jinfo_comps_info_dc_tbl_no[ci];
+            p_comp_info_ac_tbl_no = &p_jinfo_comps_info_ac_tbl_no[ci];
+
+            if (cc == *p_comp_info_id)
+                goto id_found;
+        }
+        main_result++;
+        // printf("Bad Component ID!\n");
+        EXIT;
+
+    id_found:
+        *p_comp_info_dc_tbl_no = (c >> 4) & 15;
+        *p_comp_info_ac_tbl_no = (c)&15;
+
+        // printf(" comp_id       = %d\n",cc);
+        // printf(" dc_tbl_no     = %d\n",*p_comp_info_dc_tbl_no);
+        // printf(" ac_tbl_no     = %d\n",*p_comp_info_ac_tbl_no);
+
+        if (cc != out_comp_id_get_sos[i_get_sos])
+        {
+            main_result++;
+        }
+        if (*p_comp_info_dc_tbl_no != out_dc_tbl_no_get_sos[i_get_sos])
+        {
+            main_result++;
+        }
+        if (*p_comp_info_ac_tbl_no != out_ac_tbl_no_get_sos[i_get_sos])
+        {
+            main_result++;
+        }
+        i_get_sos++;
+    }
+
+    /* Pass parameters; Ss, Se, Ah and Al for progressive JPEG */
+    j = 3;
+    while (j--)
+    {
+        c = read_byte();
+    }
+
+    /*
      * Define the Buffer at this point as the head of data
      */
-  p_jinfo_jpeg_data = ReadBuf;
+    p_jinfo_jpeg_data = ReadBuf;
 }
 
 /*
@@ -419,183 +419,183 @@ void get_sos()
  */
 void get_dht()
 {
-  int length;
-  int index, i, count;
-  int *p_xhtbl_bits;
-  int *p_xhtbl_huffval;
+    int length;
+    int index, i, count;
+    int *p_xhtbl_bits;
+    int *p_xhtbl_huffval;
 
-  length = read_word();
-  length -= 2;
+    length = read_word();
+    length -= 2;
 
-  // printf(" length = %d\n",length);
+    // printf(" length = %d\n",length);
 
-  if (length != out_length_get_dht[i_get_dht])
-  {
-    main_result++;
-  }
-
-  while (length > 16)
-  {
-    index = read_byte();
-
-    // printf(" index = 0x%x\n",index);
-
-    if (index != out_index_get_dht[i_get_dht])
+    if (length != out_length_get_dht[i_get_dht])
     {
-      main_result++;
+        main_result++;
     }
 
-    if (index & 0x10)
+    while (length > 16)
     {
-      /* AC */
-      index -= 0x10;
-      p_xhtbl_bits = p_jinfo_ac_xhuff_tbl_bits[index];
-      p_xhtbl_huffval = p_jinfo_ac_xhuff_tbl_huffval[index];
+        index = read_byte();
+
+        // printf(" index = 0x%x\n",index);
+
+        if (index != out_index_get_dht[i_get_dht])
+        {
+            main_result++;
+        }
+
+        if (index & 0x10)
+        {
+            /* AC */
+            index -= 0x10;
+            p_xhtbl_bits = p_jinfo_ac_xhuff_tbl_bits[index];
+            p_xhtbl_huffval = p_jinfo_ac_xhuff_tbl_huffval[index];
+        }
+        else
+        {
+            /* DC */
+            p_xhtbl_bits = p_jinfo_dc_xhuff_tbl_bits[index];
+            p_xhtbl_huffval = p_jinfo_dc_xhuff_tbl_huffval[index];
+        }
+
+        count = 0;
+
+        for (i = 1; i <= 16; i++)
+        {
+            p_xhtbl_bits[i] = read_byte();
+            count += p_xhtbl_bits[i];
+        }
+
+        // printf(" count = %d\n",count);
+
+        if (count != out_count_get_dht[i_get_dht])
+        {
+            main_result++;
+        }
+        i_get_dht++;
+
+        length -= 1 + 16;
+
+        for (i = 0; i < count; i++)
+        {
+            p_xhtbl_huffval[i] = read_byte();
+        }
+
+        length -= count;
     }
-    else
-    {
-      /* DC */
-      p_xhtbl_bits = p_jinfo_dc_xhuff_tbl_bits[index];
-      p_xhtbl_huffval = p_jinfo_dc_xhuff_tbl_huffval[index];
-    }
-
-    count = 0;
-
-    for (i = 1; i <= 16; i++)
-    {
-      p_xhtbl_bits[i] = read_byte();
-      count += p_xhtbl_bits[i];
-    }
-
-    // printf(" count = %d\n",count);
-
-    if (count != out_count_get_dht[i_get_dht])
-    {
-      main_result++;
-    }
-    i_get_dht++;
-
-    length -= 1 + 16;
-
-    for (i = 0; i < count; i++)
-    {
-      p_xhtbl_huffval[i] = read_byte();
-    }
-
-    length -= count;
-  }
 }
 
 void get_dqt()
 {
-  int length;
-  int prec, num, i;
-  unsigned int tmp;
-  unsigned int *p_quant_tbl;
+    int length;
+    int prec, num, i;
+    unsigned int tmp;
+    unsigned int *p_quant_tbl;
 
-  length = read_word();
-  length -= 2;
+    length = read_word();
+    length -= 2;
 
-  // printf(" length = %d\n",length);
+    // printf(" length = %d\n",length);
 
-  if (length != out_length_get_dqt[i_get_dqt])
-  {
-    main_result++;
-  }
-
-  while (length > 0)
-  {
-    num = read_byte();
-    /* Precision 0:8bit, 1:16bit*/
-    prec = num >> 4;
-    /* Table Number */
-    num &= 0x0f;
-
-    // printf(" prec = %d\n",prec);
-    // printf(" num  = %d\n",num);
-
-    if (prec != out_prec_get_dht[i_get_dqt])
+    if (length != out_length_get_dqt[i_get_dqt])
     {
-      main_result++;
-    }
-    if (num != out_num_get_dht[i_get_dqt])
-    {
-      main_result++;
-    }
-    i_get_dqt++;
-
-    p_quant_tbl = &p_jinfo_quant_tbl_quantval[num][DCTSIZE2];
-    for (i = 0; i < DCTSIZE2; i++)
-    {
-      if (prec)
-        tmp = read_word();
-      else
-        tmp = read_byte();
-      p_quant_tbl[izigzag_index[i]] = (unsigned short)tmp;
+        main_result++;
     }
 
-    length -= DCTSIZE2 + 1;
-    if (prec)
-      length -= DCTSIZE2;
-  }
+    while (length > 0)
+    {
+        num = read_byte();
+        /* Precision 0:8bit, 1:16bit*/
+        prec = num >> 4;
+        /* Table Number */
+        num &= 0x0f;
+
+        // printf(" prec = %d\n",prec);
+        // printf(" num  = %d\n",num);
+
+        if (prec != out_prec_get_dht[i_get_dqt])
+        {
+            main_result++;
+        }
+        if (num != out_num_get_dht[i_get_dqt])
+        {
+            main_result++;
+        }
+        i_get_dqt++;
+
+        p_quant_tbl = &p_jinfo_quant_tbl_quantval[num][DCTSIZE2];
+        for (i = 0; i < DCTSIZE2; i++)
+        {
+            if (prec)
+                tmp = read_word();
+            else
+                tmp = read_byte();
+            p_quant_tbl[izigzag_index[i]] = (unsigned short)tmp;
+        }
+
+        length -= DCTSIZE2 + 1;
+        if (prec)
+            length -= DCTSIZE2;
+    }
 }
 
 void read_markers(unsigned char *buffer)
 {
-  int unread_marker;
-  int sow_SOI;
+    int unread_marker;
+    int sow_SOI;
 
-  ReadBuf = buffer;
+    ReadBuf = buffer;
 
-  sow_SOI = 0;
+    sow_SOI = 0;
 
-  unread_marker = 0;
+    unread_marker = 0;
 
-  /* Read the head of the marker */
-  for (;;)
-  {
-    if (!sow_SOI)
+    /* Read the head of the marker */
+    for (;;)
     {
-      unread_marker = first_marker();
+        if (!sow_SOI)
+        {
+            unread_marker = first_marker();
+        }
+        else
+        {
+            unread_marker = next_marker();
+        }
+
+        // printf("\nmarker = 0x%x\n",unread_marker);
+
+        if (unread_marker != out_unread_marker[i_marker++])
+        {
+            main_result++;
+        }
+
+        if (unread_marker == M_SOI)
+        {
+            sow_SOI = 1;
+        }
+        if (unread_marker == M_SOF0)
+        {
+            get_sof();
+        }
+        if (unread_marker == M_SOS)
+        {
+            get_sos();
+            return;
+        }
+        if (unread_marker == M_DHT)
+        {
+            get_dht();
+        }
+        if (unread_marker == M_DQT)
+        {
+            get_dqt();
+        }
+        if (unread_marker == M_EOI)
+        {
+            return;
+        }
     }
-    else
-    {
-      unread_marker = next_marker();
-    }
-
-    // printf("\nmarker = 0x%x\n",unread_marker);
-
-    if (unread_marker != out_unread_marker[i_marker++])
-    {
-      main_result++;
-    }
-
-    switch (unread_marker)
-    {
-    case M_SOI: /* Start of Image */
-      sow_SOI = 1;
-      break;
-
-    case M_SOF0: /* Baseline DCT ( Huffman ) */
-      get_sof();
-      break;
-
-    case M_SOS: /* Start of Scan ( Head of Compressed Data ) */
-      get_sos();
-      return;
-
-    case M_DHT:
-      get_dht();
-      break;
-
-    case M_DQT:
-      get_dqt();
-      break;
-
-    case M_EOI:
-      return;
-    }
-  }
 }
 
 #define LS(r, s) ((r) << (s))
@@ -623,156 +623,155 @@ void read_markers(unsigned char *buffer)
  */
 void ChenIDct(int *x, int *y)
 {
-  register int i;
-  register int *aptr;
-  register int a0, a1, a2, a3;
-  register int b0, b1, b2, b3;
-  register int c0, c1, c2, c3;
+    register int i;
+    register int *aptr;
+    register int a0, a1, a2, a3;
+    register int b0, b1, b2, b3;
+    register int c0, c1, c2, c3;
 
-  /* Loop over columns */
+    /* Loop over columns */
 
-  for (i = 0; i < 8; i++)
-  {
-    aptr = x + i;
-    b0 = LS(*aptr, 2);
-    aptr += 8;
-    a0 = LS(*aptr, 2);
-    aptr += 8;
-    b2 = LS(*aptr, 2);
-    aptr += 8;
-    a1 = LS(*aptr, 2);
-    aptr += 8;
-    b1 = LS(*aptr, 2);
-    aptr += 8;
-    a2 = LS(*aptr, 2);
-    aptr += 8;
-    b3 = LS(*aptr, 2);
-    aptr += 8;
-    a3 = LS(*aptr, 2);
+    for (i = 0; i < 8; i++)
+    {
+        aptr = x + i;
+        b0 = LS(*aptr, 2);
+        aptr += 8;
+        a0 = LS(*aptr, 2);
+        aptr += 8;
+        b2 = LS(*aptr, 2);
+        aptr += 8;
+        a1 = LS(*aptr, 2);
+        aptr += 8;
+        b1 = LS(*aptr, 2);
+        aptr += 8;
+        a2 = LS(*aptr, 2);
+        aptr += 8;
+        b3 = LS(*aptr, 2);
+        aptr += 8;
+        a3 = LS(*aptr, 2);
 
-    /* Split into even mode  b0 = x0  b1 = x4  b2 = x2  b3 = x6.
-	 And the odd terms a0 = x1 a1 = x3 a2 = x5 a3 = x7.
-	 */
+        /* Split into even mode  b0 = x0  b1 = x4  b2 = x2  b3 = x6.
+         And the odd terms a0 = x1 a1 = x3 a2 = x5 a3 = x7.
+         */
 
-    c0 = MSCALE((c7d16 * a0) - (c1d16 * a3));
-    c1 = MSCALE((c3d16 * a2) - (c5d16 * a1));
-    c2 = MSCALE((c3d16 * a1) + (c5d16 * a2));
-    c3 = MSCALE((c1d16 * a0) + (c7d16 * a3));
+        c0 = MSCALE((c7d16 * a0) - (c1d16 * a3));
+        c1 = MSCALE((c3d16 * a2) - (c5d16 * a1));
+        c2 = MSCALE((c3d16 * a1) + (c5d16 * a2));
+        c3 = MSCALE((c1d16 * a0) + (c7d16 * a3));
 
-    /* First Butterfly on even terms.*/
+        /* First Butterfly on even terms.*/
 
-    a0 = MSCALE(c1d4 * (b0 + b1));
-    a1 = MSCALE(c1d4 * (b0 - b1));
+        a0 = MSCALE(c1d4 * (b0 + b1));
+        a1 = MSCALE(c1d4 * (b0 - b1));
 
-    a2 = MSCALE((c3d8 * b2) - (c1d8 * b3));
-    a3 = MSCALE((c1d8 * b2) + (c3d8 * b3));
+        a2 = MSCALE((c3d8 * b2) - (c1d8 * b3));
+        a3 = MSCALE((c1d8 * b2) + (c3d8 * b3));
 
-    b0 = a0 + a3;
-    b1 = a1 + a2;
-    b2 = a1 - a2;
-    b3 = a0 - a3;
+        b0 = a0 + a3;
+        b1 = a1 + a2;
+        b2 = a1 - a2;
+        b3 = a0 - a3;
 
-    /* Second Butterfly */
+        /* Second Butterfly */
 
-    a0 = c0 + c1;
-    a1 = c0 - c1;
-    a2 = c3 - c2;
-    a3 = c3 + c2;
+        a0 = c0 + c1;
+        a1 = c0 - c1;
+        a2 = c3 - c2;
+        a3 = c3 + c2;
 
-    c0 = a0;
-    c1 = MSCALE(c1d4 * (a2 - a1));
-    c2 = MSCALE(c1d4 * (a2 + a1));
-    c3 = a3;
+        c0 = a0;
+        c1 = MSCALE(c1d4 * (a2 - a1));
+        c2 = MSCALE(c1d4 * (a2 + a1));
+        c3 = a3;
 
-    aptr = y + i;
-    *aptr = b0 + c3;
-    aptr += 8;
-    *aptr = b1 + c2;
-    aptr += 8;
-    *aptr = b2 + c1;
-    aptr += 8;
-    *aptr = b3 + c0;
-    aptr += 8;
-    *aptr = b3 - c0;
-    aptr += 8;
-    *aptr = b2 - c1;
-    aptr += 8;
-    *aptr = b1 - c2;
-    aptr += 8;
-    *aptr = b0 - c3;
-  }
+        aptr = y + i;
+        *aptr = b0 + c3;
+        aptr += 8;
+        *aptr = b1 + c2;
+        aptr += 8;
+        *aptr = b2 + c1;
+        aptr += 8;
+        *aptr = b3 + c0;
+        aptr += 8;
+        *aptr = b3 - c0;
+        aptr += 8;
+        *aptr = b2 - c1;
+        aptr += 8;
+        *aptr = b1 - c2;
+        aptr += 8;
+        *aptr = b0 - c3;
+    }
 
-  /* Loop over rows */
+    /* Loop over rows */
 
-  for (i = 0; i < 8; i++)
-  {
-    aptr = y + LS(i, 3);
-    b0 = *(aptr++);
-    a0 = *(aptr++);
-    b2 = *(aptr++);
-    a1 = *(aptr++);
-    b1 = *(aptr++);
-    a2 = *(aptr++);
-    b3 = *(aptr++);
-    a3 = *(aptr);
+    for (i = 0; i < 8; i++)
+    {
+        aptr = y + LS(i, 3);
+        b0 = *(aptr++);
+        a0 = *(aptr++);
+        b2 = *(aptr++);
+        a1 = *(aptr++);
+        b1 = *(aptr++);
+        a2 = *(aptr++);
+        b3 = *(aptr++);
+        a3 = *(aptr);
+
+        /*
+        Split into even mode  b0 = x0  b1 = x4  b2 = x2  b3 = x6.
+        And the odd terms a0 = x1 a1 = x3 a2 = x5 a3 = x7.
+        */
+
+        c0 = MSCALE((c7d16 * a0) - (c1d16 * a3));
+        c1 = MSCALE((c3d16 * a2) - (c5d16 * a1));
+        c2 = MSCALE((c3d16 * a1) + (c5d16 * a2));
+        c3 = MSCALE((c1d16 * a0) + (c7d16 * a3));
+
+        /* First Butterfly on even terms.*/
+
+        a0 = MSCALE(c1d4 * (b0 + b1));
+        a1 = MSCALE(c1d4 * (b0 - b1));
+
+        a2 = MSCALE((c3d8 * b2) - (c1d8 * b3));
+        a3 = MSCALE((c1d8 * b2) + (c3d8 * b3));
+
+        /* Calculate last set of b's */
+
+        b0 = a0 + a3;
+        b1 = a1 + a2;
+        b2 = a1 - a2;
+        b3 = a0 - a3;
+
+        /* Second Butterfly */
+
+        a0 = c0 + c1;
+        a1 = c0 - c1;
+        a2 = c3 - c2;
+        a3 = c3 + c2;
+
+        c0 = a0;
+        c1 = MSCALE(c1d4 * (a2 - a1));
+        c2 = MSCALE(c1d4 * (a2 + a1));
+        c3 = a3;
+
+        aptr = y + LS(i, 3);
+        *(aptr++) = b0 + c3;
+        *(aptr++) = b1 + c2;
+        *(aptr++) = b2 + c1;
+        *(aptr++) = b3 + c0;
+        *(aptr++) = b3 - c0;
+        *(aptr++) = b2 - c1;
+        *(aptr++) = b1 - c2;
+        *(aptr) = b0 - c3;
+    }
 
     /*
-	Split into even mode  b0 = x0  b1 = x4  b2 = x2  b3 = x6.
-	And the odd terms a0 = x1 a1 = x3 a2 = x5 a3 = x7.
-	*/
+      Retrieve correct accuracy. We have additional factor
+      of 16 that must be removed.
+     */
 
-    c0 = MSCALE((c7d16 * a0) - (c1d16 * a3));
-    c1 = MSCALE((c3d16 * a2) - (c5d16 * a1));
-    c2 = MSCALE((c3d16 * a1) + (c5d16 * a2));
-    c3 = MSCALE((c1d16 * a0) + (c7d16 * a3));
-
-    /* First Butterfly on even terms.*/
-
-    a0 = MSCALE(c1d4 * (b0 + b1));
-    a1 = MSCALE(c1d4 * (b0 - b1));
-
-    a2 = MSCALE((c3d8 * b2) - (c1d8 * b3));
-    a3 = MSCALE((c1d8 * b2) + (c3d8 * b3));
-
-    /* Calculate last set of b's */
-
-    b0 = a0 + a3;
-    b1 = a1 + a2;
-    b2 = a1 - a2;
-    b3 = a0 - a3;
-
-    /* Second Butterfly */
-
-    a0 = c0 + c1;
-    a1 = c0 - c1;
-    a2 = c3 - c2;
-    a3 = c3 + c2;
-
-    c0 = a0;
-    c1 = MSCALE(c1d4 * (a2 - a1));
-    c2 = MSCALE(c1d4 * (a2 + a1));
-    c3 = a3;
-
-    aptr = y + LS(i, 3);
-    *(aptr++) = b0 + c3;
-    *(aptr++) = b1 + c2;
-    *(aptr++) = b2 + c1;
-    *(aptr++) = b3 + c0;
-    *(aptr++) = b3 - c0;
-    *(aptr++) = b2 - c1;
-    *(aptr++) = b1 - c2;
-    *(aptr) = b0 - c3;
-  }
-
-  /*
-    Retrieve correct accuracy. We have additional factor
-    of 16 that must be removed.
-   */
-
-  for (i = 0, aptr = y; i < 64; i++, aptr++)
-    *aptr = (((*aptr < 0) ? (*aptr - 8) : (*aptr + 8)) / 16);
+    for (i = 0, aptr = y; i < 64; i++, aptr++)
+        *aptr = (((*aptr < 0) ? (*aptr - 8) : (*aptr + 8)) / 16);
 }
-
 
 #include "huffman.h"
 
@@ -1133,7 +1132,7 @@ void decode_start(int *out_data_image_width, int *out_data_image_height, int *ou
         {
             /*
              * Decode Y element
-	         * Decoding Y, U and V elements should be sequentially conducted for the use of Huffman table
+             * Decoding Y, U and V elements should be sequentially conducted for the use of Huffman table
              */
 
             for (i = 0; i < 4; i++)
@@ -1350,7 +1349,7 @@ int huff_make_dhuff_tb(int *p_xhtbl_bits, int *p_xhtbl_huffval, int p_dhtbl_ml, 
 }
 
 /*
- *  
+ *
  */
 int DecodeHuffman(int *Xhuff_bits, int *Xhuff_huffval, int Dhuff_ml, int *Dhuff_maxcode, int *Dhuff_mincode, int *Dhuff_valptr)
 {
@@ -1450,7 +1449,6 @@ void DecodeHuffMCU(int *out_buf, int num_cmp)
     }
 }
 
-
 #include "decode.h"
 #include "huffman.h"
 #include "marker.h"
@@ -1461,66 +1459,65 @@ void DecodeHuffMCU(int *out_buf, int num_cmp)
  */
 void jpeg_init_decompress()
 {
-  int tmp;
-  /*
-      * Get MCU number
-      */
-  p_jinfo_MCUHeight = (p_jinfo_image_height - 1) / 8 + 1;
-  p_jinfo_MCUWidth = (p_jinfo_image_width - 1) / 8 + 1;
-  p_jinfo_NumMCU = p_jinfo_MCUHeight * p_jinfo_MCUWidth;
+    int tmp;
+    /*
+     * Get MCU number
+     */
+    p_jinfo_MCUHeight = (p_jinfo_image_height - 1) / 8 + 1;
+    p_jinfo_MCUWidth = (p_jinfo_image_width - 1) / 8 + 1;
+    p_jinfo_NumMCU = p_jinfo_MCUHeight * p_jinfo_MCUWidth;
 
-  /*
+    /*
      * Create Huffman Table for decoding
      */
-  tmp = huff_make_dhuff_tb(&p_jinfo_dc_xhuff_tbl_bits[0][0],
-                           &p_jinfo_dc_xhuff_tbl_huffval[0][0],
-                           p_jinfo_dc_dhuff_tbl_ml[0],
-                           &p_jinfo_dc_dhuff_tbl_maxcode[0][0],
-                           &p_jinfo_dc_dhuff_tbl_mincode[0][0],
-                           &p_jinfo_dc_dhuff_tbl_valptr[0][0]);
-  p_jinfo_dc_dhuff_tbl_ml[0] = tmp;
-  tmp = huff_make_dhuff_tb(&p_jinfo_dc_xhuff_tbl_bits[1][0],
-                           &p_jinfo_dc_xhuff_tbl_huffval[1][0],
-                           p_jinfo_dc_dhuff_tbl_ml[1],
-                           &p_jinfo_dc_dhuff_tbl_maxcode[1][0],
-                           &p_jinfo_dc_dhuff_tbl_mincode[1][0],
-                           &p_jinfo_dc_dhuff_tbl_valptr[1][0]);
-  p_jinfo_dc_dhuff_tbl_ml[1] = tmp;
-  tmp = huff_make_dhuff_tb(&p_jinfo_ac_xhuff_tbl_bits[0][0],
-                           &p_jinfo_ac_xhuff_tbl_huffval[0][0],
-                           p_jinfo_ac_dhuff_tbl_ml[0],
-                           &p_jinfo_ac_dhuff_tbl_maxcode[0][0],
-                           &p_jinfo_ac_dhuff_tbl_mincode[0][0],
-                           &p_jinfo_ac_dhuff_tbl_valptr[0][0]);
-  p_jinfo_ac_dhuff_tbl_ml[0] = tmp;
-  tmp = huff_make_dhuff_tb(&p_jinfo_ac_xhuff_tbl_bits[1][0],
-                           &p_jinfo_ac_xhuff_tbl_huffval[1][0],
-                           p_jinfo_ac_dhuff_tbl_ml[1],
-                           &p_jinfo_ac_dhuff_tbl_maxcode[1][0],
-                           &p_jinfo_ac_dhuff_tbl_mincode[1][0],
-                           &p_jinfo_ac_dhuff_tbl_valptr[1][0]);
-  p_jinfo_ac_dhuff_tbl_ml[1] = tmp;
+    tmp = huff_make_dhuff_tb(&p_jinfo_dc_xhuff_tbl_bits[0][0],
+                             &p_jinfo_dc_xhuff_tbl_huffval[0][0],
+                             p_jinfo_dc_dhuff_tbl_ml[0],
+                             &p_jinfo_dc_dhuff_tbl_maxcode[0][0],
+                             &p_jinfo_dc_dhuff_tbl_mincode[0][0],
+                             &p_jinfo_dc_dhuff_tbl_valptr[0][0]);
+    p_jinfo_dc_dhuff_tbl_ml[0] = tmp;
+    tmp = huff_make_dhuff_tb(&p_jinfo_dc_xhuff_tbl_bits[1][0],
+                             &p_jinfo_dc_xhuff_tbl_huffval[1][0],
+                             p_jinfo_dc_dhuff_tbl_ml[1],
+                             &p_jinfo_dc_dhuff_tbl_maxcode[1][0],
+                             &p_jinfo_dc_dhuff_tbl_mincode[1][0],
+                             &p_jinfo_dc_dhuff_tbl_valptr[1][0]);
+    p_jinfo_dc_dhuff_tbl_ml[1] = tmp;
+    tmp = huff_make_dhuff_tb(&p_jinfo_ac_xhuff_tbl_bits[0][0],
+                             &p_jinfo_ac_xhuff_tbl_huffval[0][0],
+                             p_jinfo_ac_dhuff_tbl_ml[0],
+                             &p_jinfo_ac_dhuff_tbl_maxcode[0][0],
+                             &p_jinfo_ac_dhuff_tbl_mincode[0][0],
+                             &p_jinfo_ac_dhuff_tbl_valptr[0][0]);
+    p_jinfo_ac_dhuff_tbl_ml[0] = tmp;
+    tmp = huff_make_dhuff_tb(&p_jinfo_ac_xhuff_tbl_bits[1][0],
+                             &p_jinfo_ac_xhuff_tbl_huffval[1][0],
+                             p_jinfo_ac_dhuff_tbl_ml[1],
+                             &p_jinfo_ac_dhuff_tbl_maxcode[1][0],
+                             &p_jinfo_ac_dhuff_tbl_mincode[1][0],
+                             &p_jinfo_ac_dhuff_tbl_valptr[1][0]);
+    p_jinfo_ac_dhuff_tbl_ml[1] = tmp;
 }
 
 void jpeg_read(unsigned char *read_buf)
 {
 
-  /*
+    /*
      * Read markers
      */
-  read_markers(read_buf);
+    read_markers(read_buf);
 
-  /*
+    /*
      * Initialize the information used for decoding
      */
-  jpeg_init_decompress();
+    jpeg_init_decompress();
 
-  /*
+    /*
      * Start decoding
      */
-  decode_start(&OutData_image_width, &OutData_image_height, &OutData_comp_vpos[0], &OutData_comp_hpos[0]);
+    decode_start(&OutData_image_width, &OutData_image_height, &OutData_comp_vpos[0], &OutData_comp_hpos[0]);
 }
-
 
 #include "global.h"
 #include "init.h"
@@ -1533,49 +1530,49 @@ unsigned char JpegFileBuf[JPEG_FILE_SIZE];
 
 int jpeg2bmp_main()
 {
-	int ci;
-	unsigned char *c;
-	int i, j;
+    int ci;
+    unsigned char *c;
+    int i, j;
 
-	/*
+    /*
      * Store input data in buffer
      */
-	c = JpegFileBuf;
-	for (i = 0; i < JPEGSIZE; i++)
-	{
-		ci = hana_jpg[i];
-		*c++ = ci;
-	}
+    c = JpegFileBuf;
+    for (i = 0; i < JPEGSIZE; i++)
+    {
+        ci = hana_jpg[i];
+        *c++ = ci;
+    }
 
-	jpeg_read(JpegFileBuf);
+    jpeg_read(JpegFileBuf);
 
-	for (i = 0; i < RGB_NUM; i++)
-	{
-		for (j = 0; j < BMP_OUT_SIZE; j++)
-		{
-			if (OutData_comp_buf[i][j] != hana_bmp[i][j])
-			{
-				main_result++;
-			}
-		}
-	}
-	if (OutData_image_width != out_width)
-	{
-		main_result++;
-	}
-	if (OutData_image_height != out_length)
-	{
-		main_result++;
-	}
-	return (0);
+    for (i = 0; i < RGB_NUM; i++)
+    {
+        for (j = 0; j < BMP_OUT_SIZE; j++)
+        {
+            if (OutData_comp_buf[i][j] != hana_bmp[i][j])
+            {
+                main_result++;
+            }
+        }
+    }
+    if (OutData_image_width != out_width)
+    {
+        main_result++;
+    }
+    if (OutData_image_height != out_length)
+    {
+        main_result++;
+    }
+    return (0);
 }
 
 int main()
 {
-  main_result = 0;
-  jpeg2bmp_main();
+    main_result = 0;
+    jpeg2bmp_main();
 
-  printf("%d\n", main_result);
+    printf("%d\n", main_result);
 
-  return main_result;
+    return main_result;
 }
