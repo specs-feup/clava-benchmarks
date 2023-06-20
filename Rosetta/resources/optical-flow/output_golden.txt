@@ -1,1 +1,1 @@
-Average error: 150.083 degrees
+Average error: 37.435 degrees

@@ -11,7 +11,10 @@
 #include <cstdlib>
 #include <getopt.h>
 #include <string>
-#include <time.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <ctime>
 #include <sys/time.h>
 
 // other headers
@@ -34,49 +37,72 @@ int main(int argc, char **argv)
     // create actual file names according to the datapath
     std::string frame_files[5];
     std::string reference_file;
-    frame_files[0] = dataPath + "/frame1.ppm";
-    frame_files[1] = dataPath + "/frame2.ppm";
-    frame_files[2] = dataPath + "/frame3.ppm";
-    frame_files[3] = dataPath + "/frame4.ppm";
-    frame_files[4] = dataPath + "/frame5.ppm";
-    reference_file = dataPath + "/ref.flo";
+    frame_files[0] = dataPath + "/frame1.dat";
+    frame_files[1] = dataPath + "/frame2.dat";
+    frame_files[2] = dataPath + "/frame3.dat";
+    frame_files[3] = dataPath + "/frame4.dat";
+    frame_files[4] = dataPath + "/frame5.dat";
+    reference_file = dataPath + "/ref.flo.dat";
 
-    // read in images and convert to grayscale
+    static pixel_t frames[5][MAX_HEIGHT][MAX_WIDTH];
+    static velocity_t outputs[MAX_HEIGHT][MAX_WIDTH];
+    static float refFlow[MAX_HEIGHT][MAX_WIDTH * 2] = {0};
+
+    // read in images
     printf("Reading input files ... \n");
 
-    CByteImage imgs[5];
-    for (int i = 0; i < 5; i++)
+    for (int k = 0; k < 5; k++)
     {
-        CByteImage tmpImg;
-        ReadImage(tmpImg, frame_files[i].c_str());
-        imgs[i] = ConvertToGray(tmpImg);
+        FILE *file = fopen(frame_files[k].c_str(), "r");
+
+        int row = 0;
+        int col = 0;
+
+        while (row < MAX_HEIGHT)
+        {
+            fscanf(file, "%f,", &frames[k][row][col]);
+
+            col++;
+            if (col >= MAX_WIDTH)
+            {
+                row++;
+                col = 0;
+            }
+        }
     }
 
     // read in reference flow file
     printf("Reading reference output flow... \n");
 
-    CFloatImage refFlow;
-    ReadFlowFile(refFlow, reference_file.c_str());
+    FILE *file = fopen(reference_file.c_str(), "r");
+
+    int row = 0;
+    int col = 0;
+
+    while (row < MAX_HEIGHT)
+    {
+        fscanf(file, "%f,", &refFlow[row][col]);
+
+        col++;
+        if (col >= MAX_WIDTH * 2)
+        {
+            row++;
+            col = 0;
+        }
+    }
 
     // timers
-    struct timeval start, end;
-
-    static pixel_t frames[5][MAX_HEIGHT][MAX_WIDTH];
-    static velocity_t outputs[MAX_HEIGHT][MAX_WIDTH];
+    struct timeval start,
+        end;
 
     gettimeofday(&start, NULL);
-    // use native C datatype arrays
-    for (int f = 0; f < 5; f++)
-        for (int i = 0; i < MAX_HEIGHT; i++)
-            for (int j = 0; j < MAX_WIDTH; j++)
-                frames[f][i][j] = imgs[f].Pixel(j, i, 0) / 255.0f;
 
     // run
     optical_flow_sw(frames[0], frames[1], frames[2], frames[3], frames[4], outputs);
     gettimeofday(&end, NULL);
 
     // check results
-    printf("Checking results:\n");
+    // printf("Checking results:\n");
 
     check_results(outputs, refFlow, outFile);
 

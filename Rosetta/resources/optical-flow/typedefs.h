@@ -6,8 +6,8 @@
 /*                                                               */
 /*===============================================================*/
 
-#ifndef __TYPEDEFS_H__
-#define __TYPEDEFS_H__
+#pragma once
+
 const int MAX_HEIGHT = 436;
 const int MAX_WIDTH = 1024;
 
@@ -39,5 +39,3 @@ typedef struct
     vel_pixel_t x;
     vel_pixel_t y;
 } velocity_t;
-
-#endif
