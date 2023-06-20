@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
   }
 
   pb_SwitchToTimer(&timers, pb_TimerID_COMPUTE);
-
+  #pragma kernel
   gridding_Gold(n, params, samples, LUT, sizeLUT, gridData, sampleDensity);
 
   pb_SwitchToTimer(&timers, pb_TimerID_IO);

@@ -74,6 +74,7 @@ int main(int argc, char **argv)
 
 	int p, i, k;
 	// main execution
+	#pragma kernel
 	for (p = 0; p < 50; p++)
 	{
 		for (i = 0; i < dim; i++)

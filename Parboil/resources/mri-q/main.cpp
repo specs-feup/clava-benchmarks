@@ -171,6 +171,7 @@ int main(int argc, char *argv[])
     kVals[k].Kz = kz[k];
     kVals[k].PhiMag = phiMag[k];
   }
+  #pragma kernel
   ComputeQCPU(numK, numX, kVals, x, y, z, Qr, Qi);
   printf("Here2\n");
   if (params->outFile)

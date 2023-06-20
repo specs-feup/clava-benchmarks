@@ -328,8 +328,8 @@ int blowfish_main()
 int main()
 {
     int main_result;
-
     main_result = 0;
+    #pragma kernel
     main_result = blowfish_main();
 
     // printf("%d\n", main_result);

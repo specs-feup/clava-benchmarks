@@ -146,7 +146,12 @@ int encrypt(int statemt[32], int key[32], int key_type)
     // }
 
     for (i = 0; i < 16; i++)
-        main_result += (statemt[i] != out_enc_statemt[i]);
+		if(statemt[i] != out_enc_statemt[i]) {
+			printf("Encrypt test fail. Expected %d, got %d", out_enc_statemt[i], statemt[i]);
+			main_result += 1;
+		}
+		//main_result += isDiff;
+        //main_result += (statemt[i] != out_enc_statemt[i]);
 
     return 0;
 }
@@ -219,8 +224,20 @@ int decrypt(int statemt[32], int key[32], int key_type)
     // printf ("%x", statemt[i]);
     // }
 
-    for (i = 0; i < 16; i++)
-        main_result += (statemt[i] != out_dec_statemt[i]);
+    for (i = 0; i < 16; i++) {
+		if(statemt[i] != out_dec_statemt[i]) {
+			printf("Decrypt test fail. Expected %d, got %d", out_dec_statemt[i], statemt[i]);
+			main_result += 1;
+		}
+		/*
+		int isDiff = (statemt[i] != out_dec_statemt[i]);
+		if(isDiff) {
+			printf("Decrypt test fail. Expected %d, got %d", out_dec_statemt[i], statemt[i]);
+		}
+		main_result += isDiff;
+		*/
+        //main_result += (statemt[i] != out_dec_statemt[i]);
+	}
 
     return 0;
 }
@@ -873,6 +890,7 @@ int aes_main(void)
 int main()
 {
     main_result = 0;
+	#pragma kernel
     aes_main();
     // printf("\n%d\n", main_result);
     return main_result;

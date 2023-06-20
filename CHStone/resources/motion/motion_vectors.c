@@ -390,48 +390,49 @@ decode_motion_vector(int *pred, int r_size, int motion_code, int motion_residual
 
 int main()
 {
-    int i, j, k;
-    int main_result;
-    int PMV[2][2][2];
-    int dmvector[2];
-    int motion_vertical_field_select[2][2];
-    int s, motion_vector_count, mv_format, h_r_size, v_r_size, dmv, mvscale;
+	int i, j, k;
+	int main_result;
+	int PMV[2][2][2];
+	int dmvector[2];
+	int motion_vertical_field_select[2][2];
+	int s, motion_vector_count, mv_format, h_r_size, v_r_size, dmv, mvscale;
 
-    main_result = 0;
-    evalue = 0;
-    System_Stream_Flag = 0;
-    s = 0;
-    motion_vector_count = 1;
-    mv_format = 0;
-    h_r_size = 200;
-    v_r_size = 200;
-    dmv = 0;
-    mvscale = 1;
-    for (i = 0; i < 2; i++)
-    {
-        dmvector[i] = 0;
-        for (j = 0; j < 2; j++)
-        {
-            motion_vertical_field_select[i][j] = inmvfs[i][j];
-            for (k = 0; k < 2; k++)
-                PMV[i][j][k] = inPMV[i][j][k];
-        }
-    }
+	main_result = 0;
+	evalue = 0;
+	System_Stream_Flag = 0;
+	s = 0;
+	motion_vector_count = 1;
+	mv_format = 0;
+	h_r_size = 200;
+	v_r_size = 200;
+	dmv = 0;
+	mvscale = 1;
+	for (i = 0; i < 2; i++)
+	{
+		dmvector[i] = 0;
+		for (j = 0; j < 2; j++)
+		{
+			motion_vertical_field_select[i][j] = inmvfs[i][j];
+			for (k = 0; k < 2; k++)
+				PMV[i][j][k] = inPMV[i][j][k];
+		}
+	}
 
-    Initialize_Buffer();
-    motion_vectors(PMV, dmvector, motion_vertical_field_select, s,
-                   motion_vector_count, mv_format, h_r_size, v_r_size, dmv,
-                   mvscale);
+	Initialize_Buffer();
+	#pragma kernel
+	motion_vectors(PMV, dmvector, motion_vertical_field_select, s,
+				   motion_vector_count, mv_format, h_r_size, v_r_size, dmv,
+				   mvscale);
 
-    for (i = 0; i < 2; i++)
-        for (j = 0; j < 2; j++)
-        {
-            main_result +=
-                (motion_vertical_field_select[i][j] != outmvfs[i][j]);
-            for (k = 0; k < 2; k++)
-                main_result += (PMV[i][j][k] != outPMV[i][j][k]);
-        }
+	for (i = 0; i < 2; i++)
+		for (j = 0; j < 2; j++)
+		{
+			main_result +=
+				(motion_vertical_field_select[i][j] != outmvfs[i][j]);
+			for (k = 0; k < 2; k++)
+				main_result += (PMV[i][j][k] != outPMV[i][j][k]);
+		}
 
-    // printf("%d\n", main_result);
-    return main_result;
+	//printf("%d\n", main_result);
+	return main_result;
 }
