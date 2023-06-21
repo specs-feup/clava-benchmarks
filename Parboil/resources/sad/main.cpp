@@ -278,12 +278,14 @@ int main(int argc, char **argv)
       malloc(41 * MAX_POS_PADDED * image_size_macroblocks * sizeof(short));
 
   /* Run the kernel code */
-  sad4_cpu(sads_computed,
+  #pragma kernel
+  {
+	sad4_cpu(sads_computed,
            (unsigned short *)cur_image->data,
            (unsigned short *)ref_image->data,
            ref_image->width / 16, ref_image->height / 16);
-  larger_sads(sads_computed, image_size_macroblocks);
-
+	larger_sads(sads_computed, image_size_macroblocks);
+  }
   /* Print output */
   if (params->outFile)
   {

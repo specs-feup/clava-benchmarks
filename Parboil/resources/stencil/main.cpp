@@ -91,6 +91,7 @@ int main(int argc, char **argv)
 	memcpy(h_Anext, h_A0, sizeof(float) * size);
 
 	int t;
+	#pragma kernel
 	for (t = 0; t < iteration; t++)
 	{
 		cpu_stencil(c0, c1, h_A0, h_Anext, nx, ny, nz);

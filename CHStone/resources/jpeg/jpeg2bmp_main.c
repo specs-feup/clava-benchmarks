@@ -1570,6 +1570,7 @@ int jpeg2bmp_main()
 int main()
 {
     main_result = 0;
+    #pragma kernel 
     jpeg2bmp_main();
 
     printf("%d\n", main_result);

@@ -840,6 +840,7 @@ int main()
     int main_result;
 
     main_result = 0;
+    #pragma kernel
     adpcm_main();
     for (i = 0; i < IN_END / 2; i++)
     {

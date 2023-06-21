@@ -228,12 +228,16 @@ int main()
     int i;
     int main_result;
     main_result = 0;
+	#pragma kernel
     sha_stream();
 
     for (i = 0; i < 5; i++)
     {
 
         main_result += (sha_info_digest[i] != outData[i]);
+		if(sha_info_digest[i] != outData[i]) {
+			printf("Test fail in sha_info_digest[%d]. The expected result is %d, and the test result is %d.\n", i, outData[i], sha_info_digest[i]);
+		}				
     }
     //printf("%d\n", main_result);
 

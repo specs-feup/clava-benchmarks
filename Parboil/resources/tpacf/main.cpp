@@ -112,31 +112,34 @@ int main(int argc, char **argv)
     return (0);
   }
 
-  // compute DD
-  doCompute(data, npd, NULL, 0, 1, DD, nbins, binb);
-
-  // loop through random data files
-  for (rf = 0; rf < args.random_count; rf++)
+  #pragma kernel
   {
-    // read random file
-    pb_SwitchToTimer(&timers, pb_TimerID_IO);
-    npr = readdatafile(params->inpFiles[rf + 1], random, args.npoints);
-    pb_SwitchToTimer(&timers, pb_TimerID_COMPUTE);
-    if (npr != args.npoints)
-    {
-      fprintf(stderr,
-              "Error: read %i random points out of %i in file %s\n",
-              npr, args.npoints, params->inpFiles[rf + 1]);
-      return (0);
-    }
-
-    // compute RR
-    doCompute(random, npr, NULL, 0, 1, RRS, nbins, binb);
-
-    // compute DR
-    doCompute(data, npd, random, npr, 0, DRS, nbins, binb);
+	// compute DD
+	doCompute(data, npd, NULL, 0, 1, DD, nbins, binb);
+	
+	// loop through random data files
+	for (rf = 0; rf < args.random_count; rf++)
+	{
+		// read random file
+		pb_SwitchToTimer(&timers, pb_TimerID_IO);
+		npr = readdatafile(params->inpFiles[rf + 1], random, args.npoints);
+		pb_SwitchToTimer(&timers, pb_TimerID_COMPUTE);
+		if (npr != args.npoints)
+		{
+		fprintf(stderr,
+				"Error: read %i random points out of %i in file %s\n",
+				npr, args.npoints, params->inpFiles[rf + 1]);
+		return (0);
+		}
+	
+		// compute RR
+		doCompute(random, npr, NULL, 0, 1, RRS, nbins, binb);
+	
+		// compute DR
+		doCompute(data, npd, random, npr, 0, DRS, nbins, binb);
+	}
   }
-
+  
   // compute and output results
   if ((outfile = fopen(params->outFile, "w")) == NULL)
   {

@@ -506,16 +506,23 @@ int main()
     for (i = 0; i < N; i++)
         so[i] = inData[i];
 
+	#pragma kernel
     Gsm_LPC_Analysis(so, LARc);
 
     for (i = 0; i < N; i++)
     {
         main_result += (so[i] != outData[i]);
+		if(so[i] != outData[i]) {
+			printf("Test fail in so[%d]. The expected result is %d, and the test result is %d.\n", i, so[i], outData[i]);
+		}
         //printf("No. %d. The expected result is %d, and the test result is %d.\n", i, so[i], outData[i]);
     }
     for (i = 0; i < M; i++)
     {
         main_result += (LARc[i] != outLARc[i]);
+		if(LARc[i] != outLARc[i]) {
+			printf("Test fail in LARc[%d]. The expected result is %d, and the test result is %d.\n", i, LARc[i], outLARc[i]);
+		}		
         //printf("No. %d. The expected result is %d, and the test result is %d.\n", i, LARc[i], outLARc[i]);
     }
 
