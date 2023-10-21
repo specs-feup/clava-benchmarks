@@ -35,18 +35,24 @@ MachSuiteBenchmarkSet.prototype = Object.create(BenchmarkSet.prototype);
  * Available benchmarks
  */
 MachSuiteBenchmarkSet._benchmarkNames = new PredefinedStrings("benchmark name", true, [
+    "aes",
     "backprop",
+    "bfs-bulk",
+    "bfs-queue",
     "fft-strided",
     "fft-transpose",
     "gemm-blocked",
     "gemm-ncubed",
+    "kmp",
     "md-grid",
     "md-knn",
+    "nw",
     "sort-merge",
     "sort-radix",
     "spmv-crs",
     "spmv-ellpack",
     "stencil-2d",
+    "stencil-3d",
     "viterbi"]);
 
 /*

@@ -1,2 +1,2 @@
 # Import path to import this resource
-lara.benchmark.RosettaBenchmarkResources
+lara.benchmark.MachSuiteBenchmarkResources

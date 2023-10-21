@@ -93,13 +93,17 @@ MachSuiteBenchmarkInstance.prototype._executePrivate = function () {
 
 MachSuiteBenchmarkInstance.prototype._addCode = function () {
     // Create array with source files	
-    var sourceFiles = [];
+    const sourceFiles = [];
 
-    var dir = MachSuiteBenchmarkResources.getFolder(this._benchmarkName);
+    const dir = MachSuiteBenchmarkResources.getFolder(this._benchmarkName);
+    const exts = [".c", ".cpp", ".h", ".hpp"];
+
     if (Io.isFolder(dir)) {
-        for (var file of Io.getFiles(dir)) {
-            if (file.name.endsWith(".c") || file.name.endsWith(".cpp") || file.name.endsWith(".h")) {
-                sourceFiles.push(this._benchmarkName + "/" + file.name);
+        for (const file of Io.getFiles(dir)) {
+            for (const ext of exts) {
+                if (file.name.endsWith(ext)) {
+                    sourceFiles.push(this._benchmarkName + "/" + file.name);
+                }
             }
         }
     }
@@ -107,9 +111,9 @@ MachSuiteBenchmarkInstance.prototype._addCode = function () {
     println(sourceFiles);
 
     // Add files to tree
-    for (var filename of sourceFiles) {
-        var file = MachSuiteBenchmarkResources.getFile(filename);
-        var clavaJPFile = ClavaJoinPoints.file(file);
+    for (const filename of sourceFiles) {
+        const file = MachSuiteBenchmarkResources.getFile(filename);
+        const clavaJPFile = ClavaJoinPoints.file(file);
         Clava.addFile(clavaJPFile);
     }
 }
