@@ -30,5 +30,7 @@
 *.exe
 *.out
 *.app
+a.out
 
 .vscode/
+output.data
