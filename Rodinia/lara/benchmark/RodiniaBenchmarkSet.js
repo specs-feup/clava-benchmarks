@@ -74,6 +74,31 @@ RodiniaBenchmarkSet._benchmarkNames = new PredefinedStrings("benchmark name", tr
  */
 RodiniaBenchmarkSet._inputSizes = new PredefinedStrings("input size", true, ["N"]);
 
+RodiniaBenchmarkSet.prototype._standards = {
+    "backprop": "c11",
+    "bfs": "c++11",
+    "b+tree": "c11",
+    "cfd-euler3d": "c++11",
+    "cfd-euler3d-double": "c++11",
+    "cfd-pre-euler3d": "c++11",
+    "cfd-pre-euler3d-double": "c++11",
+    "heartwall": "c11",
+    "hotspot": "c++11",
+    "hotspot3D": "c11",
+    "kmeans": "c11",
+    "lavaMD": "c++11",
+    "leukocyte": "c11",
+    "lud": "c11",
+    "myocyte": "c11",
+    "nn": "c11",
+    "nw": "c++11",
+    "particlefilter": "c11",
+    "pathfinder": "c++11",
+    "srad-v1": "c11",
+    "srad-v2": "c++11",
+    "streamcluster": "c++11"
+};
+
 
 /**
  * @return {lara.util.PredefinedStrings} Names of the available benchmarks.
@@ -143,7 +168,7 @@ RodiniaBenchmarkSet.prototype._getInstancesPrivate = function () {
                 continue;
             }
 
-            instances.push(new RodiniaBenchmarkInstance(benchName, inputSize));
+            instances.push(new RodiniaBenchmarkInstance(benchName, inputSize, this._standards[benchName]));
 
         }
     }

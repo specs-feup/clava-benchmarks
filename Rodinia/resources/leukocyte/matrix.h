@@ -1,5 +1,6 @@
 #pragma once
 
+#define NULL ((void *)0)
 #define Real float
 
 /* vector definition */
@@ -16,9 +17,6 @@ typedef struct
     unsigned int max_m, max_n, max_size;
     Real **me, *base; /* base is base of alloc'd mem */
 } MAT;
-
-#include "matrix.h"
-#define NULL ((void *)0)
 
 // Reimplementations of some functions from the original library
 double m_get_val(MAT *m, int i, int j);

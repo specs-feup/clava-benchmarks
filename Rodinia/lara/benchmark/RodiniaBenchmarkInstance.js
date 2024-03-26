@@ -9,13 +9,14 @@ laraImport("weaver.WeaverJps");
 /**
  * Instance of a C Rodinia benchmark.
  */
-function RodiniaBenchmarkInstance(benchmarkName, inputSize) {
+function RodiniaBenchmarkInstance(benchmarkName, inputSize, standard) {
     // Parent constructor
     var fullName = "Rodinia-" + benchmarkName + "-" + inputSize;
     ClavaBenchmarkInstance.call(this, fullName);
 
     this._benchmarkName = benchmarkName;
     this._inputSize = inputSize;
+    this._standard = standard;
 
     this._previousStandard = undefined;
     this._previousFlags = undefined;
@@ -35,7 +36,8 @@ RodiniaBenchmarkInstance.prototype._loadPrologue = function () {
 
     // Set standard
     this._previousStandard = Clava.getData().getStandard();
-    //Clava.getData().setStandard("c++17");
+
+    Clava.getData().setStandard(this._standard);
 
     // Set define
     this._previousFlags = Clava.getData().getFlags();
