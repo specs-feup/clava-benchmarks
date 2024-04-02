@@ -1,7 +1,7 @@
 /********************************
 Author: Sravanthi Kota Venkata
 ********************************/
-
+#define _POSIX_C_SOURCE 199309L
 /** C File **/
 #include <stdio.h>
 #include <stdlib.h>
