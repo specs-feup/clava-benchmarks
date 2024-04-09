@@ -1,4 +1,4 @@
-// #define SYNTHETIC1
+#pragma once
 
 typedef struct
 {

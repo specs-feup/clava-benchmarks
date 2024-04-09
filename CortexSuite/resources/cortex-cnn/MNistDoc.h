@@ -9,6 +9,7 @@
 
 #define GAUSSIAN_FIELD_SIZE (21) // strictly odd number
 #include <stdbool.h>
+#include <stdio.h>
 
 typedef struct
 {

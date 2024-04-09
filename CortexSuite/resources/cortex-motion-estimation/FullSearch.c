@@ -1,7 +1,8 @@
-#include "MotionEstimation.h"
-#include "FullSearch.h"
 #include <math.h>
 #include <stdlib.h>
+
+#include "MotionEstimation.h"
+#include "FullSearch.h"
 
 void Taylor_App(Image *block, Image *block_ref, int BlockSize, double *MVx_frac, double *MVy_frac)
 {

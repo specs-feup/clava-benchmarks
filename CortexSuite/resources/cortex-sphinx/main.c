@@ -48,14 +48,14 @@ int main(int argc, char *argv[])
     hyp = ps_get_hyp(ps, &score, &uttid);
     if (hyp == NULL)
         return 1;
-    stop = photonEndTiming();
+    // stop = photonEndTiming();
     fclose(fh);
 
     fh = fopen("out.txt", "wt");
     fprintf(fh, "%s", hyp);
     fclose(fh);
-    elapsed = photonReportTiming(start, stop);
-    photonPrintTiming(elapsed);
+    // elapsed = photonReportTiming(start, stop);
+    // photonPrintTiming(elapsed);
 
     // ps_free(ps);
     // fclose(fh);

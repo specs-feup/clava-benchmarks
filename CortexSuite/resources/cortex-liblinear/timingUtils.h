@@ -1,4 +1,4 @@
-
+#ifdef GCC
 #define magic_timing_begin(cycleLo, cycleHi)                  \
     {                                                         \
         asm volatile("rdtsc" : "=a"(cycleLo), "=d"(cycleHi)); \
@@ -16,6 +16,8 @@
     {                                                       \
         printf("Timing report: %d %d\n", cycleLo, cycleHi); \
     }
+
+#endif
 
 #ifdef METRO
 
@@ -52,11 +54,9 @@
                      : "$8", "$9");               \
     }
 
-/*
-#define metro_magic_timing_report(cycleLo, cycleHi) {\
-    asm volatile( "nop\n\t");\
-}
-*/
+//#define metro_magic_timing_report(cycleLo, cycleHi) {\
+//    asm volatile( "nop\n\t");\
+//}
 
 #endif
 
