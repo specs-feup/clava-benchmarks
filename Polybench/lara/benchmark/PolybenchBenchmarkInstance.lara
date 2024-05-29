@@ -4,7 +4,7 @@ import lara.benchmark.PolybenchBenchmarkResources;
 import clava.Clava;
 import clava.ClavaJoinPoints;
 
-import weaver.WeaverJps;
+import weaver.Query;
 
 /**
  * Instance of a C Polybench benchmark.
@@ -48,7 +48,7 @@ PolybenchBenchmarkInstance.prototype._loadPrivate = function() {
 	Clava.pushAst();
 	
 	// Clean AST
-	WeaverJps.root().removeChildren();
+	Query.root().removeChildren();
 
 	// Add code
 	this._addCode();

@@ -6,7 +6,7 @@ laraImport("lara.benchmark.LsuData");
 laraImport("clava.Clava");
 laraImport("clava.ClavaJoinPoints");
 
-laraImport("weaver.WeaverJps");
+laraImport("weaver.Query");
 
 
 
@@ -87,7 +87,7 @@ class LsuBenchmarkInstance extends ClavaBenchmarkInstance {
 		Clava.pushAst();
 		
 		// Clean AST
-		WeaverJps.root().removeChildren();
+		Query.root().removeChildren();
 	
 		// Add code
 		var clavaJPFile = ClavaJoinPoints.file(this.#sourceFile);

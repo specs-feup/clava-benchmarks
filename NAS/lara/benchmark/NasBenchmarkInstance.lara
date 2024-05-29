@@ -4,7 +4,7 @@ import lara.benchmark.NasBenchmarkResources;
 import clava.Clava;
 import clava.ClavaJoinPoints;
 
-import weaver.WeaverJps;
+import weaver.Query;
 
 /**
  * Instance of a C NAS benchmark.
@@ -51,7 +51,7 @@ NasBenchmarkInstance.prototype._loadPrivate = function() {
 	Clava.pushAst();
 	
 	// Clean AST
-	WeaverJps.root().removeChildren();
+	Query.root().removeChildren();
 
 	// Add code
 	var clavaJPFile = ClavaJoinPoints.file(this._file);

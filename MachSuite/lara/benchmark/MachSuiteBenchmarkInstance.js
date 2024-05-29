@@ -4,7 +4,7 @@ laraImport("lara.benchmark.MachSuiteBenchmarkResources");
 laraImport("clava.Clava");
 laraImport("clava.ClavaJoinPoints");
 
-laraImport("weaver.WeaverJps");
+laraImport("weaver.Query");
 
 /**
  * Instance of a C MachSuite benchmark.
@@ -49,7 +49,7 @@ MachSuiteBenchmarkInstance.prototype._loadPrivate = function () {
     Clava.pushAst();
 
     // Clean AST
-    WeaverJps.root().removeChildren();
+    Query.root().removeChildren();
 
     // Add code
     this._addCode();
