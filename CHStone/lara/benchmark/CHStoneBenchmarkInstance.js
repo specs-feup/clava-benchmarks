@@ -31,7 +31,7 @@ class CHStoneBenchmarkInstance extends ClavaBenchmarkInstance {
 
   /*** IMPLEMENTATIONS ***/
 
-  _loadPrologue() {
+  loadPrologue() {
     // Set standard
     this._previousStandard = Clava.getData().getStandard();
     Clava.getData().setStandard("c99");
@@ -42,7 +42,7 @@ class CHStoneBenchmarkInstance extends ClavaBenchmarkInstance {
     Clava.getData().setFlags(modifiedFlags);
   }
 
-  _loadPrivate() {
+  loadPrivate() {
     // Save current AST
     Clava.pushAst();
 
@@ -50,16 +50,19 @@ class CHStoneBenchmarkInstance extends ClavaBenchmarkInstance {
     Query.root().removeChildren();
 
     // Add code
-    this._addCode();
+    this.addCode();
 
     // Rebuild
     Clava.rebuild();
   }
 
-  _closePrivate() {
+  closePrivate() {
     // Restore standard
-    Clava.getData().setStandard(this._previousStandard);
-    this._previousStandard = undefined;
+    // HACK: not working when passing undefined
+    if (this._previousStandard !== undefined) {
+      Clava.getData().setStandard(this._previousStandard);
+      this._previousStandard = undefined;
+    }
 
     // Restore flags
     Clava.getData().setFlags(this._previousFlags);
@@ -69,7 +72,7 @@ class CHStoneBenchmarkInstance extends ClavaBenchmarkInstance {
     Clava.popAst();
   }
 
-  _addCode() {
+  addCode() {
     // Create array with source files
     var sourceFiles = [];
 
