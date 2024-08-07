@@ -43,7 +43,7 @@ class HiFlipVXBenchmarkInstance extends ClavaBenchmarkInstance {
   //HiFlipVXBenchmarkInstance.prototype = Object.create(ClavaBenchmarkInstance.prototype);
 
   /*** IMPLEMENTATIONS ***/
-
+  /*
   _loadPrologue() {
     // Set standard
     this._previousStandard = Clava.getData().getStandard();
@@ -54,8 +54,17 @@ class HiFlipVXBenchmarkInstance extends ClavaBenchmarkInstance {
     var modifiedFlags = this._previousFlags + " -DCLASS_" + this._inputSize;
     Clava.getData().setFlags(modifiedFlags);
   }
+*/
+  loadPrivate() {
+    // Set standard
+    this._previousStandard = Clava.getData().getStandard();
+    Clava.getData().setStandard("c++11");
 
-  _loadPrivate() {
+    // Set define
+    this._previousFlags = Clava.getData().getFlags();
+    var modifiedFlags = this._previousFlags + " -DCLASS_" + this._inputSize;
+    Clava.getData().setFlags(modifiedFlags);
+
     // Save current AST
     Clava.pushAst();
 
@@ -70,7 +79,7 @@ class HiFlipVXBenchmarkInstance extends ClavaBenchmarkInstance {
     Clava.rebuild();
   }
 
-  _executePrivate() {
+  executePrivate() {
     if (this._currentExe === undefined) {
       throw "HiFlipVXBenchmarkInstance._executePrivate(): no executable currently defined";
     }
@@ -82,7 +91,7 @@ class HiFlipVXBenchmarkInstance extends ClavaBenchmarkInstance {
     return this._currentExecutor;
   }
 
-  _closePrivate() {
+  closePrivate() {
     // Restore standard
     Clava.getData().setStandard(this._previousStandard);
     this._previousStandard = undefined;

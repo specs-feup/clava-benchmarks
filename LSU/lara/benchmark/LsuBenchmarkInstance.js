@@ -82,7 +82,10 @@ class LsuBenchmarkInstance extends ClavaBenchmarkInstance {
   loadPrivate() {
     // Set standard
     this.#previousStandard = Clava.getData().getStandard();
-    Clava.getData().setStandard("c99");
+    //Clava.getData().setStandard("c99");
+    Clava.getData().setStandard("gnu99");
+    //Clava.getData().setStandard("gnu90");
+    //Clava.getData().setStandard("c++11");
 
     // Save current AST
     Clava.pushAst();
