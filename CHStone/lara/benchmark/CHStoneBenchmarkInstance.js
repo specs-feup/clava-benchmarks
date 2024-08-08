@@ -45,7 +45,7 @@ class CHStoneBenchmarkInstance extends ClavaBenchmarkInstance {
     Query.root().removeChildren();
 
     // Add code
-    this._addCode();
+    this.addCode();
 
     // Rebuild
     Clava.rebuild();
@@ -53,8 +53,11 @@ class CHStoneBenchmarkInstance extends ClavaBenchmarkInstance {
 
   _closePrivate() {
     // Restore standard
+    // HACK: not working when passing undefined
+    if (this._previousStandard !== undefined) {
     Clava.getData().setStandard(this._previousStandard);
     this._previousStandard = undefined;
+    }
 
     // Restore flags
     Clava.getData().setFlags(this._previousFlags);
