@@ -68,7 +68,7 @@ class CHStoneBenchmarkInstance extends ClavaBenchmarkInstance {
     // Create array with source files
     var sourceFiles = [];
 
-    var dir = CHStoneBenchmarkResources.getFolder(this._benchmarkName);
+    var dir = new CHStoneBenchmarkResources().getFolder(this._benchmarkName);
     if (Io.isFolder(dir)) {
       for (var file of Io.getFiles(dir)) {
         if (file.name.includes(".c") || file.name.includes(".h")) {
@@ -76,11 +76,11 @@ class CHStoneBenchmarkInstance extends ClavaBenchmarkInstance {
         }
       }
     }
-    println(sourceFiles);
+    console.log("Source files: " + sourceFiles);
 
     // Add files to tree
     for (var filename of sourceFiles) {
-      var file = CHStoneBenchmarkResources.getFile(filename);
+      var file = new CHStoneBenchmarkResources().getFile(filename);
       var clavaJPFile = ClavaJoinPoints.file(file);
       Clava.addFile(clavaJPFile);
     }
