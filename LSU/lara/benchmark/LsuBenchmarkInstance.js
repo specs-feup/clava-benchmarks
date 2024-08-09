@@ -27,12 +27,13 @@ class LsuBenchmarkInstance extends ClavaBenchmarkInstance {
       );
     }
 
+    this.resources = new LsuBenchmarkResources();
     this.#benchmarkName = benchmarkName;
     this.#inputSize = inputSize;
 
     // Source file
     let sourceFilename = benchmarkName + ".c";
-    this.#sourceFile = LsuBenchmarkResources.getFile(sourceFilename);
+    this.#sourceFile = this.resources.getFile(sourceFilename);
 
     // Input file
     let dataFilename = benchSizes[inputSize];
@@ -42,7 +43,7 @@ class LsuBenchmarkInstance extends ClavaBenchmarkInstance {
       );
     }
 
-    let dataFile = LsuBenchmarkResources.getFile(dataFilename);
+    let dataFile = this.resources.getFile(dataFilename);
     if (LsuData.copyData(benchmarkName)) {
       const copiedFilePath = Io.getPath(
         Io.getWorkingFolder(),
@@ -53,6 +54,8 @@ class LsuBenchmarkInstance extends ClavaBenchmarkInstance {
     }
 
     this.#dataFile = dataFile;
+
+    this.getCMaker().addLibs("m");
 
     //const copyData = LsuData.copyData(benchmarkName.getName());
 
@@ -72,37 +75,24 @@ class LsuBenchmarkInstance extends ClavaBenchmarkInstance {
 	this.getCMaker().addLibs("m");	
 */
   }
-  /*
-  _loadPrologue() {
-    // Set standard
-    this.#previousStandard = Clava.getData().getStandard();
-    Clava.getData().setStandard("c99");
-  }
-*/
-  loadPrivate() {
+
+  loadPrologue() {
     // Set standard
     this.#previousStandard = Clava.getData().getStandard();
     //Clava.getData().setStandard("c99");
     Clava.getData().setStandard("gnu99");
     //Clava.getData().setStandard("gnu90");
     //Clava.getData().setStandard("c++11");
+  }
 
-    // Save current AST
-    Clava.pushAst();
-
-    // Clean AST
-    Query.root().removeChildren();
-
+  addCode() {
     // Add code
     var clavaJPFile = ClavaJoinPoints.file(this.#sourceFile);
     Clava.addFile(clavaJPFile);
-
-    // Rebuild
-    Clava.rebuild();
   }
 
   // TODO: Not working in clava-js
-  _executePrivate() {
+  executePrivate() {
     if (this._currentExe === undefined) {
       throw "LsuBenchmarkInstance._executePrivate(): no executable currently defined";
     }
@@ -114,12 +104,9 @@ class LsuBenchmarkInstance extends ClavaBenchmarkInstance {
     return this._currentExecutor;
   }
 
-  closePrivate() {
+  closeEpilogue() {
     // Restore standard
     Clava.getData().setStandard(this.#previousStandard);
     this.#previousStandard = undefined;
-
-    // Restore previous AST
-    Clava.popAst();
   }
 }

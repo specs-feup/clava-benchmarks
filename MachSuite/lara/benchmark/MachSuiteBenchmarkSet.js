@@ -8,33 +8,33 @@ laraImport("lara.util.StringSet");
 /**
  * C-version of the MachSuite benchmarks.
  */
-function MachSuiteBenchmarkSet() {
+class MachSuiteBenchmarkSet extends BenchmarkSet {
+  constructor() {
     // Parent constructor
-    BenchmarkSet.call(this, "MachSuiteBenchmarkSet");
+    super("MachSuiteBenchmarkSet");
 
     this._testBenchmarks = [
-        "backprop",
-        "fft-strided",
-        "fft-transpose",
-        "gemm-blocked",
-        "gemm-ncubed",
-        "md-grid",
-        "md-knn",
-        "sort-merge",
-        "sort-radix",
-        "spmv-crs",
-        "spmv-ellpack",
-        "stencil-2d",
-        "viterbi"];
+      "backprop",
+      "fft-strided",
+      "fft-transpose",
+      "gemm-blocked",
+      "gemm-ncubed",
+      "md-grid",
+      "md-knn",
+      "sort-merge",
+      "sort-radix",
+      "spmv-crs",
+      "spmv-ellpack",
+      "stencil-2d",
+      "viterbi",
+    ];
     this._testInputSizes = ["D"];
-}
-// Inheritance
-MachSuiteBenchmarkSet.prototype = Object.create(BenchmarkSet.prototype);
+  }
 
-/*
- * Available benchmarks
- */
-MachSuiteBenchmarkSet._benchmarkNames = new PredefinedStrings("benchmark name", true, [
+  /*
+   * Available benchmarks
+   */
+  static _benchmarkNames = new PredefinedStrings("benchmark name", true, [
     "aes",
     "backprop",
     "bfs-bulk",
@@ -53,86 +53,84 @@ MachSuiteBenchmarkSet._benchmarkNames = new PredefinedStrings("benchmark name", 
     "spmv-ellpack",
     "stencil-2d",
     "stencil-3d",
-    "viterbi"]);
+    "viterbi",
+  ]);
 
-/*
- * Available sizes
- */
-MachSuiteBenchmarkSet._inputSizes = new PredefinedStrings("input size", true, ["D"]);
+  /*
+   * Available sizes
+   */
+  static _inputSizes = new PredefinedStrings("input size", true, ["D"]);
 
-
-/**
- * @return {lara.util.PredefinedStrings} Names of the available benchmarks.
- */
-MachSuiteBenchmarkSet.getBenchmarkNames = function () {
+  /**
+   * @return {lara.util.PredefinedStrings} Names of the available benchmarks.
+   */
+  static getBenchmarkNames() {
     return MachSuiteBenchmarkSet._benchmarkNames;
-}
+  }
 
-/**
- * @return {lara.util.PredefinedStrings} Available input sizes (some benchmarks might not support all sizes).
- */
-MachSuiteBenchmarkSet.getInputSizes = function () {
+  /**
+   * @return {lara.util.PredefinedStrings} Available input sizes (some benchmarks might not support all sizes).
+   */
+  static getInputSizes() {
     return MachSuiteBenchmarkSet._inputSizes;
-}
+  }
 
-MachSuiteBenchmarkSet.isSizeSupported = function (benchName, inputSize) {
+  static isSizeSupported(benchName, inputSize) {
     // Check if name and inputSize are valid
     MachSuiteBenchmarkSet.getBenchmarkNames().test(benchName);
     MachSuiteBenchmarkSet.getInputSizes().test(inputSize);
 
-    return (inputSize == "D")
-}
+    return inputSize == "D";
+  }
 
-MachSuiteBenchmarkSet.prototype.setBenchmarks = function () {
-    this._testBenchmarks = MachSuiteBenchmarkSet.getBenchmarkNames().parse(arrayFromArgs(arguments));
-}
+  setBenchmarks() {
+    this._testBenchmarks = MachSuiteBenchmarkSet.getBenchmarkNames().parse(
+      arrayFromArgs(arguments)
+    );
+  }
 
-MachSuiteBenchmarkSet.prototype.setInputSizes = function () {
-    this._testInputSizes = MachSuiteBenchmarkSet.getInputSizes().parse(arrayFromArgs(arguments));
-}
+  setInputSizes() {
+    this._testInputSizes = MachSuiteBenchmarkSet.getInputSizes().parse(
+      arrayFromArgs(arguments)
+    );
+  }
 
-
-/**
- * Prints the current MachSuite benchmark set.
- */
-MachSuiteBenchmarkSet.prototype.print = function () {
+  /**
+   * Prints the current MachSuite benchmark set.
+   */
+  print() {
     println("BenchmarkSet: " + this.getName());
     println("Benchmark names: " + this._testBenchmarks);
     println("Benchmark sizes: " + this._testInputSizes);
 
     for (var benchName of this._testBenchmarks) {
+      print(benchName + ":");
 
-        print(benchName + ":");
-
-        for (var inputSize of this._testInputSizes) {
-
-            if (MachSuiteBenchmarkSet.isSizeSupported(benchName, inputSize)) {
-                print(" " + inputSize);
-            }
+      for (var inputSize of this._testInputSizes) {
+        if (MachSuiteBenchmarkSet.isSizeSupported(benchName, inputSize)) {
+          print(" " + inputSize);
         }
+      }
 
-        println();
+      println();
     }
-}
+  }
 
-/*** IMPLEMENTATIONS ***/
+  /*** IMPLEMENTATIONS ***/
 
-MachSuiteBenchmarkSet.prototype._getInstancesPrivate = function () {
-
+  _getInstancesPrivate() {
     var instances = [];
 
     for (var benchName of this._testBenchmarks) {
-
-        for (var inputSize of this._testInputSizes) {
-
-            if (!MachSuiteBenchmarkSet.isSizeSupported(benchName, inputSize)) {
-                continue;
-            }
-
-            instances.push(new MachSuiteBenchmarkInstance(benchName, inputSize));
-
+      for (var inputSize of this._testInputSizes) {
+        if (!MachSuiteBenchmarkSet.isSizeSupported(benchName, inputSize)) {
+          continue;
         }
+
+        instances.push(new MachSuiteBenchmarkInstance(benchName, inputSize));
+      }
     }
 
     return instances;
+  }
 }

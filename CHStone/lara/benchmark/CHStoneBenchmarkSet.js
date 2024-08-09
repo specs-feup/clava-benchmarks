@@ -9,10 +9,8 @@ laraImport("lara.util.StringSet");
  * C-version of the CHStone benchmarks.
  */
 class CHStoneBenchmarkSet extends BenchmarkSet {
-  constructor(name) {
-    // Parent constructor
-    super(name);
-    //BenchmarkSet.call(this, "CHStoneBenchmarkSet");
+  constructor() {
+    super("CHStoneBenchmarkSet");
 
     this._testBenchmarks = [
       "adpcm",
@@ -30,8 +28,6 @@ class CHStoneBenchmarkSet extends BenchmarkSet {
     ];
     this._testInputSizes = ["N"];
   }
-  // Inheritance
-  //CHStoneBenchmarkSet.prototype = Object.create(BenchmarkSet.prototype);
 
   /*
    * Available benchmarks

@@ -2007,7 +2007,7 @@ static enum
 
 /* Value of POSIXLY_CORRECT environment variable.  */
 static char *posixly_correct;
-
+
 # define my_index	strchr
 
 /* Avoid depending on library functions or files
@@ -2017,7 +2017,7 @@ static char *posixly_correct;
 extern char *getenv ();
 #endif
 
-static char *
+char *
 my_index (str, chr)
      const char *str;
      int chr;
