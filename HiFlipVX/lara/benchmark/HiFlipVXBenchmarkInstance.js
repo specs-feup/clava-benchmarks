@@ -16,7 +16,7 @@ class HiFlipVXBenchmarkInstance extends ClavaBenchmarkInstance {
 
     //const fullName = "HiFlipVX-" + benchmarkName + "-" + inputSize;
     //ClavaBenchmarkInstance.call(this, fullName);
-
+    this.resources = new HiFlipVXBenchmarkResources();
     this._benchmarkName = benchmarkName;
     this._inputSize = inputSize;
 
@@ -26,9 +26,9 @@ class HiFlipVXBenchmarkInstance extends ClavaBenchmarkInstance {
     var filename = benchmarkName + "/img_main.cpp";
     var inputname = benchmarkName + "/img1.pgm";
 
-    this._file = HiFlipVXBenchmarkResources.getFile(filename);
+    this._file = this.resources.getFile(filename);
 
-    let dataFile = HiFlipVXBenchmarkResources.getFile(inputname);
+    let dataFile = this.resources.getFile(inputname);
     // HiFlipVX requries img1.pgm to be in the same dir as the executable
     //let fullPath = Io.getWorkingFolder() + "/laraBenchmarks/" + fullName + "/build/bin";
     let fullPath = Io.getWorkingFolder();
@@ -55,7 +55,7 @@ class HiFlipVXBenchmarkInstance extends ClavaBenchmarkInstance {
     Clava.getData().setFlags(modifiedFlags);
   }
 */
-  loadPrivate() {
+  loadPrologue() {
     // Set standard
     this._previousStandard = Clava.getData().getStandard();
     Clava.getData().setStandard("c++11");
@@ -64,19 +64,12 @@ class HiFlipVXBenchmarkInstance extends ClavaBenchmarkInstance {
     this._previousFlags = Clava.getData().getFlags();
     var modifiedFlags = this._previousFlags + " -DCLASS_" + this._inputSize;
     Clava.getData().setFlags(modifiedFlags);
+  }
 
-    // Save current AST
-    Clava.pushAst();
-
-    // Clean AST
-    Query.root().removeChildren();
-
+  addCode() {
     // Add code
     var clavaJPFile = ClavaJoinPoints.file(this._file);
     Clava.addFile(clavaJPFile);
-
-    // Rebuild
-    Clava.rebuild();
   }
 
   executePrivate() {
@@ -91,7 +84,7 @@ class HiFlipVXBenchmarkInstance extends ClavaBenchmarkInstance {
     return this._currentExecutor;
   }
 
-  closePrivate() {
+  closeEpilogue() {
     // Restore standard
     Clava.getData().setStandard(this._previousStandard);
     this._previousStandard = undefined;
@@ -99,9 +92,6 @@ class HiFlipVXBenchmarkInstance extends ClavaBenchmarkInstance {
     // Restore flags
     Clava.getData().setFlags(this._previousFlags);
     this._previousFlags = undefined;
-
-    // Restore previous AST
-    Clava.popAst();
 
     // Delete input/output files
     Io.deleteFiles(
