@@ -72,9 +72,6 @@ class PolybenchBenchmarkSet extends BenchmarkSet {
   }
 
   static _calculateVersions() {
-    console.log(
-      "BASE FOLDER: " + new PolybenchBenchmarkResources().getBaseFolder()
-    );
     var versions = Io.getFolders(
       new PolybenchBenchmarkResources().getBaseFolder()
     ).map(function (value) {
