@@ -93,12 +93,16 @@ class NasBenchmarkSet extends BenchmarkSet {
     this._testBenchmarks = NasBenchmarkSet.getBenchmarkNames().parse(
       arrayFromArgs(arguments)
     );
+
+    return this;
   }
 
   setInputSizes() {
     this._testInputSizes = NasBenchmarkSet.getInputSizes().parse(
       arrayFromArgs(arguments)
     );
+
+    return this;
   }
 
   /**
