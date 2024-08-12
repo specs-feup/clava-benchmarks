@@ -8,103 +8,122 @@ laraImport("lara.util.StringSet");
 /**
  * C-version of the CHStone benchmarks.
  */
-function CHStoneBenchmarkSet() {
-	// Parent constructor
-	BenchmarkSet.call(this, "CHStoneBenchmarkSet");
+class CHStoneBenchmarkSet extends BenchmarkSet {
+  constructor() {
+    super("CHStoneBenchmarkSet");
 
-	this._testBenchmarks = ["adpcm", "aes", "blowfish", "dfadd", "dfdiv", "dfmul", "dfsin", "gsm", "jpeg",
-		"mips", "motion", "sha"];
-	this._testInputSizes = ["N"];
-}
-// Inheritance
-CHStoneBenchmarkSet.prototype = Object.create(BenchmarkSet.prototype);
+    this._testBenchmarks = [
+      "adpcm",
+      "aes",
+      "blowfish",
+      "dfadd",
+      "dfdiv",
+      "dfmul",
+      "dfsin",
+      "gsm",
+      "jpeg",
+      "mips",
+      "motion",
+      "sha",
+    ];
+    this._testInputSizes = ["N"];
+  }
 
-/*
- * Available benchmarks
- */
-CHStoneBenchmarkSet._benchmarkNames = new PredefinedStrings("benchmark name", true, ["adpcm", "aes", "blowfish",
-	"dfadd", "dfdiv", "dfmul", "dfsin", "gsm", "jpeg", "mips", "motion", "sha"]);
+  /*
+   * Available benchmarks
+   */
+  static _benchmarkNames = new PredefinedStrings("benchmark name", true, [
+    "adpcm",
+    "aes",
+    "blowfish",
+    "dfadd",
+    "dfdiv",
+    "dfmul",
+    "dfsin",
+    "gsm",
+    "jpeg",
+    "mips",
+    "motion",
+    "sha",
+  ]);
 
-/*
- * Available sizes
- */
-CHStoneBenchmarkSet._inputSizes = new PredefinedStrings("input size", true, ["N"]);
+  /*
+   * Available sizes
+   */
+  static _inputSizes = new PredefinedStrings("input size", true, ["N"]);
 
+  /**
+   * @return {lara.util.PredefinedStrings} Names of the available benchmarks.
+   */
+  static getBenchmarkNames() {
+    return CHStoneBenchmarkSet._benchmarkNames;
+  }
 
-/**
- * @return {lara.util.PredefinedStrings} Names of the available benchmarks.
- */
-CHStoneBenchmarkSet.getBenchmarkNames = function () {
-	return CHStoneBenchmarkSet._benchmarkNames;
-}
+  /**
+   * @return {lara.util.PredefinedStrings} Available input sizes (some benchmarks might not support all sizes).
+   */
+  static getInputSizes() {
+    return CHStoneBenchmarkSet._inputSizes;
+  }
 
-/**
- * @return {lara.util.PredefinedStrings} Available input sizes (some benchmarks might not support all sizes).
- */
-CHStoneBenchmarkSet.getInputSizes = function () {
-	return CHStoneBenchmarkSet._inputSizes;
-}
+  static isSizeSupported(benchName, inputSize) {
+    // Check if name and inputSize are valid
+    CHStoneBenchmarkSet.getBenchmarkNames().test(benchName);
+    CHStoneBenchmarkSet.getInputSizes().test(inputSize);
 
-CHStoneBenchmarkSet.isSizeSupported = function (benchName, inputSize) {
-	// Check if name and inputSize are valid
-	CHStoneBenchmarkSet.getBenchmarkNames().test(benchName);
-	CHStoneBenchmarkSet.getInputSizes().test(inputSize);
+    // CHStone has no sizes, so this is superfluous
 
-	// CHStone has no sizes, so this is superfluous
+    return true;
+  }
 
-	return true;
-}
+  setBenchmarks() {
+    this._testBenchmarks = CHStoneBenchmarkSet.getBenchmarkNames().parse(
+      arrayFromArgs(arguments)
+    );
+  }
 
-CHStoneBenchmarkSet.prototype.setBenchmarks = function () {
-	this._testBenchmarks = CHStoneBenchmarkSet.getBenchmarkNames().parse(arrayFromArgs(arguments));
-}
+  setInputSizes() {
+    this._testInputSizes = CHStoneBenchmarkSet.getInputSizes().parse(
+      arrayFromArgs(arguments)
+    );
+  }
 
-CHStoneBenchmarkSet.prototype.setInputSizes = function () {
-	this._testInputSizes = CHStoneBenchmarkSet.getInputSizes().parse(arrayFromArgs(arguments));
-}
+  /**
+   * Prints the current CHStone benchmark set.
+   */
+  print() {
+    println("BenchmarkSet: " + this.getName());
+    println("Benchmark names: " + this._testBenchmarks);
+    println("Benchmark sizes: " + this._testInputSizes);
 
+    for (var benchName of this._testBenchmarks) {
+      print(benchName + ":");
 
-/**
- * Prints the current CHStone benchmark set.
- */
-CHStoneBenchmarkSet.prototype.print = function () {
-	println("BenchmarkSet: " + this.getName());
-	println("Benchmark names: " + this._testBenchmarks);
-	println("Benchmark sizes: " + this._testInputSizes);
+      for (var inputSize of this._testInputSizes) {
+        if (CHStoneBenchmarkSet.isSizeSupported(benchName, inputSize)) {
+          print(" " + inputSize);
+        }
+      }
 
-	for (var benchName of this._testBenchmarks) {
+      println();
+    }
+  }
 
-		print(benchName + ":");
+  /*** IMPLEMENTATIONS ***/
 
-		for (var inputSize of this._testInputSizes) {
+  _getInstancesPrivate() {
+    var instances = [];
 
-			if (CHStoneBenchmarkSet.isSizeSupported(benchName, inputSize)) {
-				print(" " + inputSize);
-			}
-		}
+    for (var benchName of this._testBenchmarks) {
+      for (var inputSize of this._testInputSizes) {
+        if (!CHStoneBenchmarkSet.isSizeSupported(benchName, inputSize)) {
+          continue;
+        }
 
-		println();
-	}
-}
+        instances.push(new CHStoneBenchmarkInstance(benchName, inputSize));
+      }
+    }
 
-/*** IMPLEMENTATIONS ***/
-
-CHStoneBenchmarkSet.prototype._getInstancesPrivate = function () {
-
-	var instances = [];
-
-	for (var benchName of this._testBenchmarks) {
-
-		for (var inputSize of this._testInputSizes) {
-
-			if (!CHStoneBenchmarkSet.isSizeSupported(benchName, inputSize)) {
-				continue;
-			}
-
-			instances.push(new CHStoneBenchmarkInstance(benchName, inputSize));
-
-		}
-	}
-
-	return instances;
+    return instances;
+  }
 }

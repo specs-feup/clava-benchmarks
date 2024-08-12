@@ -8,101 +8,102 @@ laraImport("lara.util.StringSet");
 /**
  * C++ version of the HiFlipVX benchmarks.
  */
-function HiFlipVXBenchmarkSet() {
-	// Parent constructor
-	BenchmarkSet.call(this, "HiFlipVXBenchmarkSet");
+class HiFlipVXBenchmarkSet extends BenchmarkSet {
+  constructor() {
+    // Parent constructor
+    //BenchmarkSet.call(this, "HiFlipVXBenchmarkSet");
+    super("HiFlipVXBenchmarkSet");
 
-	this._testBenchmarks = ["v2"];
-	this._testInputSizes = ["N"];
-}
-// Inheritance
-HiFlipVXBenchmarkSet.prototype = Object.create(BenchmarkSet.prototype);
+    this._testBenchmarks = ["v2"];
+    this._testInputSizes = ["N"];
+  }
+  // Inheritance
+  //HiFlipVXBenchmarkSet.prototype = Object.create(BenchmarkSet.prototype);
 
-/*
- * Available benchmarks
- */
-HiFlipVXBenchmarkSet._benchmarkNames = new PredefinedStrings("benchmark name", true, ["v2"]);
+  /*
+   * Available benchmarks
+   */
+  static _benchmarkNames = new PredefinedStrings("benchmark name", true, [
+    "v2",
+  ]);
 
-/*
- * Available sizes
- */
-HiFlipVXBenchmarkSet._inputSizes = new PredefinedStrings("input size", true, ["N"]);
+  /*
+   * Available sizes
+   */
+  static _inputSizes = new PredefinedStrings("input size", true, ["N"]);
 
+  /**
+   * @return {lara.util.PredefinedStrings} Names of the available benchmarks.
+   */
+  static getBenchmarkNames() {
+    return HiFlipVXBenchmarkSet._benchmarkNames;
+  }
 
-/**
- * @return {lara.util.PredefinedStrings} Names of the available benchmarks.
- */
-HiFlipVXBenchmarkSet.getBenchmarkNames = function () {
-	return HiFlipVXBenchmarkSet._benchmarkNames;
-}
+  /**
+   * @return {lara.util.PredefinedStrings} Available input sizes (some benchmarks might not support all sizes).
+   */
+  static getInputSizes() {
+    return HiFlipVXBenchmarkSet._inputSizes;
+  }
 
-/**
- * @return {lara.util.PredefinedStrings} Available input sizes (some benchmarks might not support all sizes).
- */
-HiFlipVXBenchmarkSet.getInputSizes = function () {
-	return HiFlipVXBenchmarkSet._inputSizes;
-}
+  static isSizeSupported(benchName, inputSize) {
+    // Check if name and inputSize are valid
+    HiFlipVXBenchmarkSet.getBenchmarkNames().test(benchName);
+    HiFlipVXBenchmarkSet.getInputSizes().test(inputSize);
 
-HiFlipVXBenchmarkSet.isSizeSupported = function (benchName, inputSize) {
-	// Check if name and inputSize are valid
-	HiFlipVXBenchmarkSet.getBenchmarkNames().test(benchName);
-	HiFlipVXBenchmarkSet.getInputSizes().test(inputSize);
+    // HiFlipVX has no sizes, so this is superfluous
 
-	// HiFlipVX has no sizes, so this is superfluous
+    return true;
+  }
 
-	return true;
-}
+  setBenchmarks() {
+    this._testBenchmarks = HiFlipVXBenchmarkSet.getBenchmarkNames().parse(
+      arrayFromArgs(arguments)
+    );
+  }
 
-HiFlipVXBenchmarkSet.prototype.setBenchmarks = function () {
-	this._testBenchmarks = HiFlipVXBenchmarkSet.getBenchmarkNames().parse(arrayFromArgs(arguments));
-}
+  setInputSizes() {
+    this._testInputSizes = HiFlipVXBenchmarkSet.getInputSizes().parse(
+      arrayFromArgs(arguments)
+    );
+  }
 
-HiFlipVXBenchmarkSet.prototype.setInputSizes = function () {
-	this._testInputSizes = HiFlipVXBenchmarkSet.getInputSizes().parse(arrayFromArgs(arguments));
-}
+  /**
+   * Prints the current HiFlipVX benchmark set.
+   */
+  print() {
+    println("BenchmarkSet: " + this.getName());
+    println("Benchmark names: " + this._testBenchmarks);
+    println("Benchmark sizes: " + this._testInputSizes);
 
+    for (var benchName of this._testBenchmarks) {
+      print(benchName + ":");
 
-/**
- * Prints the current HiFlipVX benchmark set.
- */
-HiFlipVXBenchmarkSet.prototype.print = function () {
-	println("BenchmarkSet: " + this.getName());
-	println("Benchmark names: " + this._testBenchmarks);
-	println("Benchmark sizes: " + this._testInputSizes);
+      for (var inputSize of this._testInputSizes) {
+        if (HiFlipVXBenchmarkSet.isSizeSupported(benchName, inputSize)) {
+          print(" " + inputSize);
+        }
+      }
 
-	for (var benchName of this._testBenchmarks) {
+      println();
+    }
+  }
 
-		print(benchName + ":");
+  /*** IMPLEMENTATIONS ***/
 
-		for (var inputSize of this._testInputSizes) {
+  _getInstancesPrivate() {
+    var instances = [];
 
-			if (HiFlipVXBenchmarkSet.isSizeSupported(benchName, inputSize)) {
-				print(" " + inputSize);
-			}
-		}
+    for (var benchName of this._testBenchmarks) {
+      for (var inputSize of this._testInputSizes) {
+        if (!HiFlipVXBenchmarkSet.isSizeSupported(benchName, inputSize)) {
+          continue;
+        }
 
-		println();
-	}
-}
+        instances.push(new HiFlipVXBenchmarkInstance(benchName, inputSize));
+      }
+    }
 
-/*** IMPLEMENTATIONS ***/
-
-HiFlipVXBenchmarkSet.prototype._getInstancesPrivate = function () {
-
-	var instances = [];
-
-	for (var benchName of this._testBenchmarks) {
-
-		for (var inputSize of this._testInputSizes) {
-
-			if (!HiFlipVXBenchmarkSet.isSizeSupported(benchName, inputSize)) {
-				continue;
-			}
-
-			instances.push(new HiFlipVXBenchmarkInstance(benchName, inputSize));
-
-		}
-	}
-
-	return instances;
+    return instances;
+  }
 }
