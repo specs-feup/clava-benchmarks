@@ -1,6 +1,6 @@
-import LocalFolder from "lara-js/api/lara/util/LocalFolder.js";
-import { Engine, engine } from "lara-js/api/lara/util/JavaTypes.js";
-import System from "lara-js/api/lara/System.js";
+import LocalFolder from "@specs-feup/lara/api/lara/util/LocalFolder.js";
+import { Engine, engine } from "@specs-feup/lara/api/lara/util/JavaTypes.js";
+import System from "@specs-feup/lara/api/lara/System.js";
 
 export default class CHStoneBenchmarkResources extends LocalFolder {
   //constructor() {
